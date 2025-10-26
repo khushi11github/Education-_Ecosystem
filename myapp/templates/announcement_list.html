@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}Announcements - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .announcements-header {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
+    }
+    
+    .announcement-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #6BCB77;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    .announcement-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 20px rgba(107, 203, 119, 0.3);
+    }
+    
+    .announcement-card.inactive {
+        opacity: 0.6;
+        border-left-color: #dee2e6;
+    }
+    
+    .announcement-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .badge-target {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    .badge-all {
+        background: #e7f5ff;
+        color: #1971c2;
+    }
+    
+    .badge-teacher {
+        background: #fff3bf;
+        color: #f59f00;
+    }
+    
+    .badge-student {
+        background: #d3f9d8;
+        color: #2b8a3e;
+    }
+    
+    .badge-parent {
+        background: #ffe3e3;
+        color: #c92a2a;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(107, 203, 119, 0.4);
+        color: white;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<div class="announcements-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-megaphone"></i> Announcements</h1>
+            <p class="mb-0">Important updates and news for the community</p>
+        </div>
+        {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
+        <a href="{% url 'announcement_create' %}" class="btn btn-create">
+            <i class="bi bi-plus-circle"></i> Create Announcement
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Announcements List -->
+<div class="row">
+    <div class="col-12">
+        {% if announcements %}
+            {% for announcement in announcements %}
+            <div class="announcement-card {% if not announcement.is_active %}inactive{% endif %}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h4 class="mb-0">
+                        <i class="bi bi-bell-fill text-primary"></i> {{ announcement.title }}
+                    </h4>
+                    <span class="status-badge {% if announcement.is_active %}status-active{% else %}status-inactive{% endif %}">
+                        {% if announcement.is_active %}
+                            <i class="bi bi-check-circle"></i> Active
+                        {% else %}
+                            <i class="bi bi-x-circle"></i> Inactive
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="mt-3">
+                    <p style="white-space: pre-line; line-height: 1.6;">{{ announcement.content }}</p>
+                </div>
+                
+                <div class="announcement-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-person-circle"></i>
+                        <span>By: <strong>{{ announcement.created_by.get_full_name|default:announcement.created_by.username }}</strong></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-calendar"></i>
+                        <span>{{ announcement.created_at|date:"M d, Y • h:i A" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-people"></i>
+                        <span>Target: 
+                            {% if announcement.target_roles == 'all' %}
+                                <span class="badge-target badge-all">All Users</span>
+                            {% else %}
+                                {% for role in announcement.target_roles.split:',' %}
+                                    <span class="badge-target badge-{{ role }}">
+                                        {% if role == 'teacher' %}👨‍🏫 Teachers
+                                        {% elif role == 'student' %}🎓 Students
+                                        {% elif role == 'parent' %}👪 Parents
+                                        {% elif role == 'admin' %}⚙️ Admins
+                                        {% else %}{{ role|title }}
+                                        {% endif %}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if user.profile.role == 'admin' or announcement.created_by == user %}
+                <div class="mt-3 pt-3 border-top">
+                    <a href="{% url 'announcement_edit' announcement.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{% url 'announcement_delete' announcement.id %}" class="btn btn-sm btn-outline-danger" 
+                       onclick="return confirm('Are you sure you want to delete this announcement?')">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center py-5">
+                <i class="bi bi-info-circle" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">No Announcements Yet</h4>
+                <p class="text-muted">Check back later for important updates and news.</p>
+                {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
+                <a href="{% url 'announcement_create' %}" class="btn btn-create mt-3">
+                    <i class="bi bi-plus-circle"></i> Create First Announcement
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if announcements.has_other_pages %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if announcements.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ announcements.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+        
+        {% for num in announcements.paginator.page_range %}
+        <li class="page-item {% if announcements.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        
+        {% if announcements.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ announcements.next_page_number }}">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

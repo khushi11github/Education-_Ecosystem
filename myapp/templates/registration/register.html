@@ -1,0 +1,427 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Education Ecosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .register-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .register-image-side {
+            flex: 1;
+            background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .register-image-side::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .image-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            padding: 3rem;
+        }
+        
+        .animated-illustration {
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .image-content h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .image-content p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .register-form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .register-box {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-icon {
+            font-size: 3.5rem;
+            color: #6BCB77;
+            margin-bottom: 1rem;
+        }
+        
+        .logo-section h2 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-section p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+        
+        .form-label {
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #6BCB77;
+            box-shadow: 0 0 0 0.2rem rgba(107, 203, 119, 0.15);
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+            border: none;
+            padding: 0.875rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(107, 203, 119, 0.4);
+            background: linear-gradient(135deg, #4D96A9 0%, #6BCB77 100%);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #718096;
+        }
+        
+        .login-link a {
+            color: #6BCB77;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        small.text-muted {
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+        
+        .text-danger {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        @media (max-width: 968px) {
+            .register-image-side {
+                display: none;
+            }
+            
+            .register-form-side {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left Side - Image/Illustration -->
+        <div class="register-image-side">
+            <div class="image-content">
+                <!-- SVG Illustration of graduation/celebration -->
+                <svg class="animated-illustration" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Graduation Cap -->
+                    <g>
+                        <polygon points="250,120 150,160 250,200 350,160" fill="#2C3E50"/>
+                        <rect x="245" y="200" width="10" height="80" fill="#2C3E50"/>
+                        <circle cx="250" cy="280" r="8" fill="#FFD700"/>
+                        <path d="M 250 280 L 260 300" stroke="#FFD700" stroke-width="2" fill="none"/>
+                        
+                        <!-- Tassel animation -->
+                        <g>
+                            <animateTransform attributeName="transform" type="rotate" values="0 250 280; 10 250 280; 0 250 280" dur="2s" repeatCount="indefinite"/>
+                        </g>
+                    </g>
+                    
+                    <!-- Person celebrating -->
+                    <g>
+                        <!-- Body -->
+                        <ellipse cx="250" cy="260" rx="40" ry="50" fill="#3498DB"/>
+                        
+                        <!-- Head -->
+                        <circle cx="250" cy="190" r="30" fill="#FFD1A1"/>
+                        
+                        <!-- Hair -->
+                        <path d="M 225 175 Q 250 155 275 175" fill="#2C1810"/>
+                        
+                        <!-- Happy eyes -->
+                        <path d="M 235 185 Q 240 190 245 185" stroke="#000" stroke-width="2" fill="none"/>
+                        <path d="M 255 185 Q 260 190 265 185" stroke="#000" stroke-width="2" fill="none"/>
+                        
+                        <!-- Big smile -->
+                        <path d="M 230 200 Q 250 215 270 200" stroke="#000" stroke-width="2.5" fill="none"/>
+                        
+                        <!-- Arms raised in celebration -->
+                        <rect x="185" y="240" width="18" height="50" fill="#3498DB" rx="9" transform="rotate(-45 194 265)"/>
+                        <rect x="297" y="240" width="18" height="50" fill="#3498DB" rx="9" transform="rotate(45 306 265)"/>
+                        
+                        <!-- Hands -->
+                        <circle cx="185" cy="235" r="10" fill="#FFD1A1"/>
+                        <circle cx="315" cy="235" r="10" fill="#FFD1A1"/>
+                    </g>
+                    
+                    <!-- Books floating around -->
+                    <g opacity="0.8">
+                        <rect x="120" y="180" width="25" height="35" fill="#E74C3C" rx="3">
+                            <animateTransform attributeName="transform" type="translate" values="0 0; -5 -15; 0 0" dur="3s" repeatCount="indefinite"/>
+                        </rect>
+                    </g>
+                    
+                    <g opacity="0.8">
+                        <rect x="360" y="190" width="25" height="35" fill="#9B59B6" rx="3">
+                            <animateTransform attributeName="transform" type="translate" values="0 0; 5 -12; 0 0" dur="2.5s" repeatCount="indefinite"/>
+                        </rect>
+                    </g>
+                    
+                    <!-- Stars -->
+                    <g opacity="0.9">
+                        <circle cx="150" cy="130" r="6" fill="#FFD700">
+                            <animate attributeName="r" values="6; 10; 6" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    
+                    <g opacity="0.9">
+                        <circle cx="350" cy="140" r="8" fill="#FFD700">
+                            <animate attributeName="r" values="8; 12; 8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    
+                    <g opacity="0.9">
+                        <circle cx="250" cy="90" r="7" fill="#FFD700">
+                            <animate attributeName="r" values="7; 11; 7" dur="1.8s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    
+                    <!-- Confetti -->
+                    <g opacity="0.7">
+                        <rect x="180" y="150" width="8" height="8" fill="#E74C3C" transform="rotate(45)">
+                            <animateTransform attributeName="transform" type="translate" values="0 0; -10 30; 0 60" dur="3s" repeatCount="indefinite"/>
+                        </rect>
+                    </g>
+                    
+                    <g opacity="0.7">
+                        <circle cx="320" cy="160" r="5" fill="#3498DB">
+                            <animateTransform attributeName="transform" type="translate" values="0 0; 15 35; 0 70" dur="2.8s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                </svg>
+                
+                <h1>Join Us Today!</h1>
+                <p>Start Your Learning Journey</p>
+            </div>
+        </div>
+        
+        <!-- Right Side - Registration Form -->
+        <div class="register-form-side">
+            <div class="register-box">
+                <div class="logo-section">
+                    <i class="bi bi-person-plus-fill logo-icon"></i>
+                    <h2>Create Account</h2>
+                    <p>Join the Education Ecosystem</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong><i class="bi bi-exclamation-triangle"></i> Please correct the errors below:</strong>
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <i class="bi bi-person-circle"></i> Username *
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                        <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">Required. 150 characters or fewer.</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge"></i> First Name *
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                <i class="bi bi-person-badge"></i> Last Name *
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">
+                            <i class="bi bi-envelope-fill"></i> Email *
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.role.id_for_label }}" class="form-label">
+                            <i class="bi bi-person-badge-fill"></i> Role *
+                        </label>
+                        <select name="role" id="{{ form.role.id_for_label }}" class="form-select" required>
+                            <option value="">-- Select Your Role --</option>
+                            <option value="student">🎓 Student</option>
+                            <option value="teacher">👨‍🏫 Teacher</option>
+                            <option value="parent">👪 Parent</option>
+                        </select>
+                        {% if form.role.errors %}
+                        <div class="text-danger">{{ form.role.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">Choose your role in the ecosystem</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password1.id_for_label }}" class="form-label">
+                            <i class="bi bi-lock-fill"></i> Password *
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">
+                            Must contain at least 8 characters
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label">
+                            <i class="bi bi-shield-lock-fill"></i> Confirm Password *
+                        </label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register w-100">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </button>
+                </form>
+                
+                <div class="login-link">
+                    Already have an account? <a href="{% url 'login' %}">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

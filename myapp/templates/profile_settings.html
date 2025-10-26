@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Settings - Education Ecosystem{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-gear"></i> Profile Settings
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Profile Settings</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-circle"></i> Profile Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Tip:</strong> For accessibility features (font size, high contrast, text-to-speech), 
+                    use the <strong>blue floating button</strong> in the bottom-right corner of any page!
+                </div>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Please correct the errors below:</strong>
+                        <ul class="mb-0">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- User Info (Read-only) -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Username:</strong></label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Email:</strong></label>
+                            <input type="text" class="form-control" value="{{ user.email }}" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>First Name:</strong></label>
+                            <input type="text" class="form-control" value="{{ user.first_name }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Last Name:</strong></label>
+                            <input type="text" class="form-control" value="{{ user.last_name }}" disabled>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Profile Fields -->
+                    <h5 class="mb-3"><i class="bi bi-person-badge"></i> Profile Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.role.id_for_label }}" class="form-label">
+                            <i class="bi bi-person-badge"></i> Role
+                        </label>
+                        {{ form.role }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.phone.id_for_label }}" class="form-label">
+                            <i class="bi bi-telephone"></i> Phone Number
+                        </label>
+                        {{ form.phone }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.address.id_for_label }}" class="form-label">
+                            <i class="bi bi-geo-alt"></i> Address
+                        </label>
+                        {{ form.address }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.profile_picture.id_for_label }}" class="form-label">
+                            <i class="bi bi-image"></i> Profile Picture
+                        </label>
+                        {{ form.profile_picture }}
+                        {% if user.profile.profile_picture %}
+                        <div class="mt-2">
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 150px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <hr>
+                    
+                    {% if user.profile.role == 'parent' %}
+                    <hr>
+                    <h5 class="mb-3"><i class="bi bi-person-hearts"></i> Parent Settings</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.linked_student.id_for_label }}" class="form-label">
+                            <i class="bi bi-link"></i> Linked Student
+                        </label>
+                        {{ form.linked_student }}
+                        <small class="form-text text-muted">Select the student you are responsible for</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Changes
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar with Tips -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-3">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Profile Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Current Role:</strong> {{ user.profile.get_role_display }}</p>
+                <p><strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                <p class="mb-0"><strong>Last Updated:</strong> {{ user.profile.updated_at|date:"M d, Y" }}</p>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-universal-access"></i> Accessibility Features</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-arrow-down-circle display-4 text-success"></i>
+                </div>
+                <p class="text-center mb-3">
+                    <strong>Look for the blue button in the bottom-right corner!</strong>
+                </p>
+                <div class="alert alert-info mb-0">
+                    <small>
+                        <strong>Quick Access to:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Font Size (A-, A, A+)</li>
+                            <li>High Contrast Mode</li>
+                            <li>Text-to-Speech</li>
+                            <li>Read on Hover</li>
+                        </ul>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select, textarea {
+        border-radius: 6px;
+        padding: 10px 12px;
+    }
+    
+    textarea {
+        min-height: 80px;
+    }
+    
+    .form-check-input {
+        width: 3em;
+        height: 1.5em;
+    }
+</style>
+{% endblock %}

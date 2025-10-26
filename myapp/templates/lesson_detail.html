@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title }} - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .lesson-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .lesson-header {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
+    }
+    
+    .lesson-header h1 {
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .lesson-content-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    
+    .transcript-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #6BCB77;
+        margin-top: 2rem;
+    }
+    
+    .back-btn {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(107, 203, 119, 0.4);
+    }
+    
+    .lesson-meta {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .badge-content-type {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="lesson-container">
+    <!-- Lesson Header -->
+    <div class="lesson-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1><i class="bi bi-book-fill"></i> {{ lesson.title }}</h1>
+                <p class="mb-0"><strong>Course:</strong> {{ lesson.course.course_code }} - {{ lesson.course.title }}</p>
+            </div>
+            <span class="badge-content-type">
+                {% if lesson.content_type == 'video' %}
+                <i class="bi bi-play-circle-fill"></i> Video
+                {% elif lesson.content_type == 'audio' %}
+                <i class="bi bi-music-note-beamed"></i> Audio
+                {% else %}
+                <i class="bi bi-file-text-fill"></i> Text
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Lesson Content -->
+    <div class="lesson-content-card">
+        <div class="lesson-meta">
+            <div class="meta-item">
+                <i class="bi bi-person-fill text-primary"></i>
+                <span><strong>Teacher:</strong> {{ lesson.course.teacher.get_full_name|default:lesson.course.teacher.username }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="bi bi-calendar-event text-success"></i>
+                <span><strong>Created:</strong> {{ lesson.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <!-- Description -->
+        <div class="mb-4">
+            <h4><i class="bi bi-info-circle"></i> Description</h4>
+            <p>{{ lesson.description }}</p>
+        </div>
+        
+        <!-- Video Content -->
+        {% if lesson.content_type == 'video' and lesson.video_url %}
+        <div class="mb-4">
+            <h4><i class="bi bi-play-btn"></i> Video Lesson</h4>
+            
+            <!-- Main Video -->
+            <div class="video-container">
+                {% if 'youtube.com' in lesson.video_url or 'youtu.be' in lesson.video_url %}
+                    {% if 'watch?v=' in lesson.video_url %}
+                        <iframe src="https://www.youtube.com/embed/{{ lesson.video_url|slice:'32:' }}?controls=1&modestbranding=1&rel=0&fs=1&playsinline=0" 
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                loading="lazy"></iframe>
+                    {% elif 'youtu.be/' in lesson.video_url %}
+                        <iframe src="https://www.youtube.com/embed/{{ lesson.video_url|slice:'-11:' }}?controls=1&modestbranding=1&rel=0&fs=1&playsinline=0" 
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                loading="lazy"></iframe>
+                    {% else %}
+                        <p>Unable to embed video. <a href="{{ lesson.video_url }}" target="_blank">Watch on YouTube</a></p>
+                    {% endif %}
+                {% else %}
+                    <video controls controlsList="nodownload" style="width: 100%; border-radius: 10px;">
+                        <source src="{{ lesson.video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+            </div>
+            
+            <!-- Sign Language Video (Side-by-Side or Below) -->
+            {% if lesson.has_sign_language and lesson.sign_language_video_url %}
+            <div class="mt-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-hand-index-thumb text-primary" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                    <h5 class="mb-0">Sign Language Interpretation</h5>
+                </div>
+                <div class="video-container" style="border: 3px solid #6BCB77;">
+                    {% if 'youtube.com' in lesson.sign_language_video_url or 'youtu.be' in lesson.sign_language_video_url %}
+                        {% if 'watch?v=' in lesson.sign_language_video_url %}
+                            <iframe src="https://www.youtube.com/embed/{{ lesson.sign_language_video_url|slice:'32:' }}?controls=1&modestbranding=1&rel=0&fs=1" 
+                                    allowfullscreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        {% elif 'youtu.be/' in lesson.sign_language_video_url %}
+                            <iframe src="https://www.youtube.com/embed/{{ lesson.sign_language_video_url|slice:'-11:' }}?controls=1&modestbranding=1&rel=0&fs=1" 
+                                    allowfullscreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        {% endif %}
+                    {% else %}
+                        <video controls style="width: 100%; border-radius: 10px;">
+                            <source src="{{ lesson.sign_language_video_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endif %}
+                </div>
+                <div class="alert alert-info mt-2">
+                    <i class="bi bi-info-circle"></i> This video includes sign language interpretation for hearing-impaired students.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Audio Content -->
+        {% if lesson.content_type == 'audio' and lesson.file %}
+        <div class="mb-4">
+            <h4><i class="bi bi-music-note-beamed"></i> Audio Lesson</h4>
+            <audio controls style="width: 100%;">
+                <source src="{{ lesson.file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endif %}
+        
+        <!-- Text Content -->
+        {% if lesson.text_content %}
+        <div class="mb-4">
+            <h4><i class="bi bi-file-text"></i> Lesson Content</h4>
+            <div style="line-height: 1.8; font-size: 1.1rem;">
+                {{ lesson.text_content|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- File Download -->
+        {% if lesson.file %}
+        <div class="mb-4">
+            <h4><i class="bi bi-download"></i> Download Materials</h4>
+            <a href="{{ lesson.file.url }}" class="btn btn-success" download>
+                <i class="bi bi-file-earmark-arrow-down"></i> Download File
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Transcript -->
+        {% if lesson.transcript %}
+        <div class="transcript-box">
+            <h4><i class="bi bi-card-text"></i> Transcript</h4>
+            <p style="white-space: pre-line;">{{ lesson.transcript }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Accessibility Note -->
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-universal-access"></i> 
+            <strong>Accessibility Tip:</strong> Use the text-to-speech button in the bottom-right corner to have this content read aloud!
+        </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="d-flex gap-2 mb-4">
+        <a href="{% url 'course_detail' lesson.course.id %}" class="btn back-btn">
+            <i class="bi bi-arrow-left"></i> Back to Course
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            <i class="bi bi-house-fill"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+{% endblock %}

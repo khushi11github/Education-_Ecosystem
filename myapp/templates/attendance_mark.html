@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .mark-attendance-header {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
+    }
+    
+    .student-row {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .student-row:hover {
+        box-shadow: 0 5px 15px rgba(107, 203, 119, 0.2);
+    }
+    
+    .status-btn {
+        width: 100px;
+        padding: 0.5rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .status-btn input[type="radio"] {
+        display: none;
+    }
+    
+    .status-btn input[type="radio"]:checked + label {
+        font-weight: bold;
+    }
+    
+    .status-btn.present:has(input:checked) {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+    
+    .status-btn.absent:has(input:checked) {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+    }
+    
+    .status-btn.late:has(input:checked) {
+        background: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="mark-attendance-header">
+    <h1><i class="bi bi-check2-square"></i> Mark Attendance</h1>
+    <p class="mb-0">Record student attendance for today</p>
+</div>
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Course and Date Selection -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-book"></i> Select Course *</label>
+                <select name="course" class="form-select form-select-lg" required id="courseSelect">
+                    <option value="">Choose a course...</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.course_code }} - {{ course.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-calendar"></i> Date *</label>
+                <input type="date" name="date" class="form-control form-control-lg" 
+                       value="{{ today }}" required max="{{ today }}">
+            </div>
+        </div>
+        
+        <hr>
+        
+        <!-- Students List (will be loaded via JavaScript or shown if course selected) -->
+        <div id="studentsSection">
+            <h4 class="mb-3"><i class="bi bi-people"></i> Students</h4>
+            <p class="text-muted">Please select a course to see students</p>
+        </div>
+        
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check-circle"></i> Save Attendance
+            </button>
+            <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('courseSelect').addEventListener('change', function() {
+    const courseId = this.value;
+    if (!courseId) {
+        document.getElementById('studentsSection').innerHTML = `
+            <h4 class="mb-3"><i class="bi bi-people"></i> Students</h4>
+            <p class="text-muted">Please select a course to see students</p>
+        `;
+        return;
+    }
+    
+    // Fetch students for selected course
+    fetch(`/api/course/${courseId}/students/`)
+        .then(response => response.json())
+        .then(students => {
+            let html = '<h4 class="mb-3"><i class="bi bi-people"></i> Students</h4>';
+            
+            if (students.length === 0) {
+                html += '<p class="text-muted">No students enrolled in this course</p>';
+            } else {
+                students.forEach(student => {
+                    html += `
+                        <div class="student-row">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <strong><i class="bi bi-person-circle text-primary"></i> ${student.name}</strong>
+                                    <br><small class="text-muted">${student.username}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex gap-2">
+                                        <div class="status-btn present">
+                                            <input type="radio" id="present_${student.id}" 
+                                                   name="status_${student.id}" value="present" checked>
+                                            <label for="present_${student.id}" class="form-label mb-0 w-100 text-center cursor-pointer">
+                                                ✓ Present
+                                            </label>
+                                        </div>
+                                        <div class="status-btn absent">
+                                            <input type="radio" id="absent_${student.id}" 
+                                                   name="status_${student.id}" value="absent">
+                                            <label for="absent_${student.id}" class="form-label mb-0 w-100 text-center cursor-pointer">
+                                                ✗ Absent
+                                            </label>
+                                        </div>
+                                        <div class="status-btn late">
+                                            <input type="radio" id="late_${student.id}" 
+                                                   name="status_${student.id}" value="late">
+                                            <label for="late_${student.id}" class="form-label mb-0 w-100 text-center cursor-pointer">
+                                                ⏰ Late
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="remarks_${student.id}" 
+                                           class="form-control form-control-sm" placeholder="Remarks">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('studentsSection').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching students:', error);
+            document.getElementById('studentsSection').innerHTML = `
+                <div class="alert alert-danger">Error loading students. Please try again.</div>
+            `;
+        });
+});
+</script>
+
+{% endblock %}

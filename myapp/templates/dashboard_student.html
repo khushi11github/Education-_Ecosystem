@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    /* Welcome Section Animation */
+    .welcome-header {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .welcome-header h1 {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        display: inline-block;
+    }
+    
+    .alert-info {
+        animation: slideInRight 0.8s ease-out 0.2s both;
+        border-left: 4px solid #17a2b8;
+        background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(23, 162, 184, 0.05) 100%);
+    }
+    
+    /* Card Animations */
+    .animated-card {
+        animation: fadeInUp 0.6s ease-out both;
+        transition: all 0.3s ease;
+    }
+    
+    .animated-card:nth-child(1) { animation-delay: 0.1s; }
+    .animated-card:nth-child(2) { animation-delay: 0.2s; }
+    .animated-card:nth-child(3) { animation-delay: 0.3s; }
+    .animated-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .animated-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    /* Course Card Hover Effects */
+    .course-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(107, 203, 119, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .course-card:hover::before {
+        left: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(107, 203, 119, 0.3);
+    }
+    
+    /* Icon Animations */
+    .icon-float {
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .icon-pulse {
+        display: inline-block;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    /* Table Row Hover */
+    .table-hover tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table-hover tbody tr:hover {
+        background: linear-gradient(90deg, rgba(107, 203, 119, 0.1) 0%, transparent 100%);
+        transform: translateX(5px);
+    }
+    
+    /* Button Animations */
+    .btn {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Badge Pulse */
+    .badge {
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    /* Card Header Gradient */
+    .card-header {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+        animation: rotate 10s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Stats Counter Animation */
+    .stats-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #6BCB77;
+        display: inline-block;
+        animation: fadeInUp 1s ease-out;
+    }
+    
+    /* Quick Action Cards */
+    .quick-action-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: none;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+    
+    .quick-action-card:hover {
+        transform: scale(1.05) rotate(1deg);
+        box-shadow: 0 20px 40px rgba(107, 203, 119, 0.3);
+    }
+    
+    /* Decorative Elements */
+    .decorative-shape {
+        position: fixed;
+        border-radius: 50%;
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: #6BCB77;
+        top: -150px;
+        right: -150px;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: #4D96A9;
+        bottom: -100px;
+        left: -100px;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+</style>
+
+<!-- Decorative Background Shapes -->
+<div class="decorative-shape shape-1"></div>
+<div class="decorative-shape shape-2"></div>
+
+<div class="row">
+    <div class="col-12 welcome-header">
+        <h1 class="mb-4">
+            <i class="bi bi-person icon-float"></i> Student Dashboard
+        </h1>
+        <p class="lead">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! 👋</p>
+        <div class="alert alert-info">
+            <i class="bi bi-universal-access icon-pulse"></i> 
+            <strong>Accessibility Tip:</strong> Use the <strong>floating button</strong> in the bottom-right corner 
+            to adjust font size, enable high contrast, or use text-to-speech features!
+        </div>
+    </div>
+</div>
+
+<!-- My Courses -->
+<div class="card mb-4 animated-card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-book icon-float"></i> My Enrolled Courses</h5>
+    </div>
+    <div class="card-body">
+        {% if enrolled_courses %}
+        <div class="row g-3">
+            {% for course in enrolled_courses %}
+            <div class="col-md-6">
+                <div class="card h-100 course-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.course_code }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ course.title }}</h6>
+                        <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                        <p class="mb-2">
+                            <strong>Teacher:</strong> {{ course.teacher.get_full_name|default:course.teacher.username }}
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> View Course
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="bi bi-file-earmark-text"></i> <span class="stats-number">{{ course.lessons.count }}</span> Lessons |
+                            <i class="bi bi-clipboard-check"></i> <span class="stats-number">{{ course.assignments.count }}</span> Assignments
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle icon-pulse"></i> You are not enrolled in any courses yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pending Assignments -->
+<div class="card mb-4 animated-card">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-clipboard-check icon-pulse"></i> Assignments to Submit ({{ pending_assignments.count }})</h5>
+    </div>
+    <div class="card-body">
+        {% if pending_assignments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Course</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in pending_assignments %}
+                    <tr>
+                        <td><strong>{{ assignment.title }}</strong></td>
+                        <td><span class="badge bg-info">{{ assignment.course.course_code }}</span></td>
+                        <td>
+                            <i class="bi bi-calendar-event"></i> {{ assignment.due_date|date:"M d, Y H:i" }}
+                            {% if assignment.due_date < now %}
+                            <span class="badge bg-danger ms-2"><i class="bi bi-exclamation-triangle"></i> Overdue</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Not Submitted</span></td>
+                        <td>
+                            <a href="{% url 'submission_create' assignment.id %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-upload"></i> Submit Now
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">
+            <i class="bi bi-check-circle text-success icon-pulse"></i> No pending assignments! All caught up. 🎉
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- My Submissions -->
+<div class="card mb-4 animated-card">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-check icon-float"></i> My Submissions</h5>
+    </div>
+    <div class="card-body">
+        {% if my_submissions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Course</th>
+                        <th>Submitted At</th>
+                        <th>Status</th>
+                        <th>Marks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for submission in my_submissions %}
+                    <tr>
+                        <td><strong>{{ submission.assignment.title }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ submission.assignment.course.course_code }}</span></td>
+                        <td><i class="bi bi-clock"></i> {{ submission.submitted_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            {% if submission.status == 'graded' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Graded</span>
+                            {% else %}
+                            <span class="badge bg-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if submission.marks_obtained %}
+                            <strong class="text-success">{{ submission.marks_obtained }}/{{ submission.assignment.max_marks }}</strong>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0"><i class="bi bi-info-circle"></i> No submissions yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card quick-action-card animated-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-chat-dots icon-float"></i> Feedback</h5>
+            </div>
+            <div class="card-body">
+                <p>💬 Share your experience or report accessibility issues</p>
+                <a href="{% url 'feedback_create' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Submit Feedback
+                </a>
+                <a href="{% url 'feedback_list' %}" class="btn btn-info btn-sm">
+                    <i class="bi bi-list"></i> View My Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card quick-action-card animated-card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-person-gear icon-pulse"></i> Profile</h5>
+            </div>
+            <div class="card-body">
+                <p>⚙️ Manage your account and personal information</p>
+                <a href="{% url 'profile_settings' %}" class="btn btn-success btn-sm">
+                    <i class="bi bi-gear"></i> Profile Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

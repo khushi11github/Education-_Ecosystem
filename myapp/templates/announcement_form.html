@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if announcement %}Edit{% else %}Create{% endif %} Announcement - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .role-checkbox {
+        display: inline-block;
+        margin-right: 1.5rem;
+        padding: 0.75rem 1.25rem;
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .role-checkbox:hover {
+        border-color: #6BCB77;
+        background: #f8f9fa;
+    }
+    
+    .role-checkbox input[type="checkbox"] {
+        margin-right: 0.5rem;
+    }
+    
+    .role-checkbox input[type="checkbox"]:checked + span {
+        font-weight: 600;
+        color: #6BCB77;
+    }
+</style>
+
+<div class="form-header">
+    <h1>
+        <i class="bi bi-{% if announcement %}pencil-square{% else %}plus-circle{% endif %}"></i> 
+        {% if announcement %}Edit{% else %}Create New{% endif %} Announcement
+    </h1>
+    <p class="mb-0">Share important updates with the community</p>
+</div>
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label class="form-label"><i class="bi bi-text-left"></i> Title *</label>
+            <input type="text" name="title" class="form-control form-control-lg" 
+                   value="{% if announcement %}{{ announcement.title }}{% endif %}" 
+                   placeholder="Enter announcement title" required maxlength="200">
+            <small class="text-muted">Clear and concise title for the announcement</small>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label"><i class="bi bi-card-text"></i> Content *</label>
+            <textarea name="content" class="form-control" rows="8" 
+                      placeholder="Enter announcement details..." required>{% if announcement %}{{ announcement.content }}{% endif %}</textarea>
+            <small class="text-muted">Provide full details of the announcement</small>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label d-block"><i class="bi bi-people"></i> Target Audience *</label>
+            <div class="mb-2">
+                <label class="role-checkbox">
+                    <input type="checkbox" name="target_all" id="targetAll" 
+                           {% if not announcement or announcement.target_roles == 'all' %}checked{% endif %}
+                           onchange="toggleRoles()">
+                    <span>👥 All Users</span>
+                </label>
+            </div>
+            
+            <div id="specificRoles" style="{% if not announcement or announcement.target_roles == 'all' %}display:none;{% endif %}">
+                <label class="role-checkbox">
+                    <input type="checkbox" name="target_roles" value="admin" 
+                           {% if announcement and 'admin' in announcement.target_roles %}checked{% endif %}>
+                    <span>⚙️ Admins</span>
+                </label>
+                <label class="role-checkbox">
+                    <input type="checkbox" name="target_roles" value="teacher"
+                           {% if announcement and 'teacher' in announcement.target_roles %}checked{% endif %}>
+                    <span>👨‍🏫 Teachers</span>
+                </label>
+                <label class="role-checkbox">
+                    <input type="checkbox" name="target_roles" value="student"
+                           {% if announcement and 'student' in announcement.target_roles %}checked{% endif %}>
+                    <span>🎓 Students</span>
+                </label>
+                <label class="role-checkbox">
+                    <input type="checkbox" name="target_roles" value="parent"
+                           {% if announcement and 'parent' in announcement.target_roles %}checked{% endif %}>
+                    <span>👪 Parents</span>
+                </label>
+            </div>
+            <small class="text-muted">Select who should see this announcement</small>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-check-label">
+                <input type="checkbox" name="is_active" class="form-check-input" 
+                       {% if not announcement or announcement.is_active %}checked{% endif %}>
+                <strong>Active</strong>
+                <small class="text-muted d-block">Uncheck to hide this announcement</small>
+            </label>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check-circle"></i> {% if announcement %}Update{% else %}Create{% endif %} Announcement
+            </button>
+            <a href="{% url 'announcement_list' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleRoles() {
+    const targetAll = document.getElementById('targetAll');
+    const specificRoles = document.getElementById('specificRoles');
+    
+    if (targetAll.checked) {
+        specificRoles.style.display = 'none';
+        // Uncheck all specific roles
+        document.querySelectorAll('input[name="target_roles"]').forEach(cb => cb.checked = false);
+    } else {
+        specificRoles.style.display = 'block';
+    }
+}
+</script>
+
+{% endblock %}

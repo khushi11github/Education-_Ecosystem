@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Education Ecosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .login-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .login-image-side {
+            flex: 1;
+            background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-image-side::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .image-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            padding: 3rem;
+        }
+        
+        .animated-illustration {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .image-content h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .image-content p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .login-form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            padding: 2rem;
+        }
+        
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 4rem;
+            color: #6BCB77;
+            margin-bottom: 1rem;
+        }
+        
+        .logo-section h2 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-section p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+        
+        .form-label {
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #6BCB77;
+            box-shadow: 0 0 0 0.2rem rgba(107, 203, 119, 0.15);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+            border: none;
+            padding: 0.875rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(107, 203, 119, 0.4);
+            background: linear-gradient(135deg, #4D96A9 0%, #6BCB77 100%);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #718096;
+        }
+        
+        .register-link a {
+            color: #6BCB77;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .features {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .feature-item {
+            flex: 1;
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+        }
+        
+        .feature-item i {
+            display: block;
+            font-size: 1.5rem;
+            color: #6BCB77;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 968px) {
+            .login-image-side {
+                display: none;
+            }
+            
+            .login-form-side {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Side - Image/Illustration -->
+        <div class="login-image-side">
+            <div class="image-content">
+                <!-- SVG Illustration of person studying -->
+                <svg class="animated-illustration" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Desk -->
+                    <rect x="100" y="280" width="300" height="15" fill="#8B4513" rx="5"/>
+                    
+                    <!-- Person Body -->
+                    <ellipse cx="250" cy="220" rx="45" ry="55" fill="#4A90E2"/>
+                    
+                    <!-- Person Head -->
+                    <circle cx="250" cy="150" r="35" fill="#FFD1A1"/>
+                    
+                    <!-- Hair -->
+                    <path d="M 220 135 Q 250 110 280 135" fill="#2C1810"/>
+                    
+                    <!-- Eyes -->
+                    <circle cx="240" cy="150" r="3" fill="#000"/>
+                    <circle cx="260" cy="150" r="3" fill="#000"/>
+                    
+                    <!-- Smile -->
+                    <path d="M 235 160 Q 250 168 265 160" stroke="#000" stroke-width="2" fill="none"/>
+                    
+                    <!-- Arms -->
+                    <rect x="205" y="220" width="20" height="60" fill="#4A90E2" rx="10"/>
+                    <rect x="275" y="220" width="20" height="60" fill="#4A90E2" rx="10"/>
+                    
+                    <!-- Laptop -->
+                    <rect x="200" y="260" width="100" height="5" fill="#333" rx="2"/>
+                    <rect x="205" y="235" width="90" height="25" fill="#87CEEB" rx="3"/>
+                    <rect x="210" y="240" width="80" height="18" fill="#FFF" rx="2"/>
+                    
+                    <!-- Books Stack -->
+                    <rect x="330" y="265" width="50" height="10" fill="#E74C3C" rx="2"/>
+                    <rect x="330" y="255" width="50" height="10" fill="#3498DB" rx="2"/>
+                    <rect x="330" y="245" width="50" height="10" fill="#2ECC71" rx="2"/>
+                    
+                    <!-- Pencil Holder -->
+                    <ellipse cx="145" cy="260" rx="15" ry="5" fill="#F39C12"/>
+                    <rect x="130" y="245" width="30" height="15" fill="#F39C12"/>
+                    
+                    <!-- Pencils -->
+                    <rect x="135" y="235" width="4" height="25" fill="#FFD700"/>
+                    <rect x="145" y="230" width="4" height="30" fill="#E74C3C"/>
+                    <rect x="155" y="238" width="4" height="22" fill="#3498DB"/>
+                    
+                    <!-- Floating Book Icon -->
+                    <g opacity="0.7">
+                        <rect x="400" y="150" width="30" height="40" fill="#9B59B6" rx="3">
+                            <animateTransform attributeName="transform" type="translate" values="0 0; 0 -10; 0 0" dur="2s" repeatCount="indefinite"/>
+                        </rect>
+                    </g>
+                    
+                    <!-- Floating Star Icon -->
+                    <g opacity="0.7">
+                        <circle cx="80" cy="100" r="8" fill="#FFD700">
+                            <animateTransform attributeName="transform" type="scale" values="1; 1.3; 1" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    
+                    <!-- Floating Light Bulb -->
+                    <g opacity="0.7">
+                        <circle cx="420" cy="80" r="12" fill="#FFF9C4">
+                            <animate attributeName="opacity" values="0.5; 1; 0.5" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <rect x="416" y="92" width="8" height="8" fill="#E0E0E0"/>
+                    </g>
+                </svg>
+                
+                <h1>Welcome Back!</h1>
+                <p>Empowering Specially Abled Students</p>
+            </div>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="login-form-side">
+            <div class="login-box">
+                <div class="logo-section">
+                    <i class="bi bi-mortarboard-fill logo-icon"></i>
+                    <h2>Education Ecosystem</h2>
+                    <p>Sign in to your account</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person-circle"></i> Username
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-lock-fill"></i> Password
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="register-link">
+                    Don't have an account? <a href="{% url 'register' %}">Create Account</a>
+                </div>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="bi bi-shield-check"></i>
+                        Secure Access
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-people"></i>
+                        Role-Based
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-universal-access"></i>
+                        Accessible
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

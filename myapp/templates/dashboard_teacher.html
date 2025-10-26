@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .section-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+    }
+    .badge-custom {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+    .attendance-progress {
+        height: 8px;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-person-badge"></i> Teacher Dashboard
+        </h1>
+        <p class="lead">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! 👨‍🏫</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Courses</h6>
+                        <h2 class="mb-0">{{ courses.count }}</h2>
+                        <small>Teaching</small>
+                    </div>
+                    <div class="fs-1 opacity-50">
+                        <i class="bi bi-book"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white bg-opacity-10 border-0">
+                <a href="{% url 'course_list' %}" class="text-white text-decoration-none small">
+                    View all <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Students</h6>
+                        <h2 class="mb-0">{{ total_students }}</h2>
+                        <small>Total Enrolled</small>
+                    </div>
+                    <div class="fs-1 opacity-50">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white bg-opacity-10 border-0">
+                <small>Across all courses</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Assignments</h6>
+                        <h2 class="mb-0">{{ total_assignments }}</h2>
+                        <small>Created</small>
+                    </div>
+                    <div class="fs-1 opacity-50">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white bg-opacity-10 border-0">
+                <small>{{ total_lessons }} lessons</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-dark-50 mb-1">To Grade</h6>
+                        <h2 class="mb-0">{{ pending_count }}</h2>
+                        <small>Submissions</small>
+                    </div>
+                    <div class="fs-1 opacity-50">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white bg-opacity-25 border-0">
+                <small>{{ graded_count }} graded</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card section-card">
+            <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%); color: white;">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check"></i> Attendance Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-md-3">
+                        <h3 class="text-success mb-0">{{ present_count }}</h3>
+                        <small class="text-muted">Present</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-danger mb-0">{{ absent_count }}</h3>
+                        <small class="text-muted">Absent</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-warning mb-0">{{ late_count }}</h3>
+                        <small class="text-muted">Late</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-primary mb-0">{{ attendance_percentage }}%</h3>
+                        <small class="text-muted">Attendance Rate</small>
+                    </div>
+                </div>
+                <div class="progress attendance-progress mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ attendance_percentage }}%"></div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'attendance_mark' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Mark Attendance
+                    </a>
+                    <a href="{% url 'attendance_list' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-list"></i> View All Records
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Courses Section -->
+<div class="card section-card mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-book"></i> My Courses ({{ courses.count }})
+        </h5>
+        <a href="{% url 'course_create' %}" class="btn btn-light btn-sm">
+            <i class="bi bi-plus-circle"></i> Create Course
+        </a>
+    </div>
+    <div class="card-body">
+        {% if courses %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th>Students</th>
+                        <th>Lessons</th>
+                        <th>Assignments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td><strong>{{ course.course_code }}</strong></td>
+                        <td>{{ course.title }}</td>
+                        <td><span class="badge bg-success">{{ course.students.count }}</span></td>
+                        <td><span class="badge bg-info">{{ course.lessons.count }}</span></td>
+                        <td><span class="badge bg-warning text-dark">{{ course.assignments.count }}</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'course_detail' course.id %}" class="btn btn-info" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'course_edit' course.id %}" class="btn btn-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'lesson_create' course.id %}" class="btn btn-success" title="Add Lesson">
+                                    <i class="bi bi-file-plus"></i>
+                                </a>
+                                <a href="{% url 'assignment_create' course.id %}" class="btn btn-warning" title="Add Assignment">
+                                    <i class="bi bi-clipboard-plus"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle"></i> You haven't created any courses yet.
+            <a href="{% url 'course_create' %}" class="alert-link">Create your first course</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Two Column Layout for Submissions and Announcements -->
+<div class="row mb-4">
+    <!-- Submissions to Grade -->
+    <div class="col-lg-8">
+        <div class="card section-card h-100">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-hourglass-split"></i> Submissions to Grade
+                </h5>
+                <span class="badge bg-dark">{{ pending_count }}</span>
+            </div>
+            <div class="card-body">
+                {% if pending_submissions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Assignment</th>
+                                <th>Course</th>
+                                <th>Submitted</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in pending_submissions %}
+                            <tr>
+                                <td>
+                                    <i class="bi bi-person-circle"></i>
+                                    {{ submission.student.get_full_name|default:submission.student.username }}
+                                </td>
+                                <td>{{ submission.assignment.title }}</td>
+                                <td><span class="badge bg-secondary">{{ submission.assignment.course.course_code }}</span></td>
+                                <td>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> {{ submission.submitted_at|timesince }} ago
+                                    </small>
+                                </td>
+                                <td>
+                                    <a href="{% url 'submission_grade' submission.id %}" class="btn btn-sm btn-success">
+                                        <i class="bi bi-pencil-square"></i> Grade
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if pending_count > 10 %}
+                <div class="text-center mt-2">
+                    <small class="text-muted">Showing 10 of {{ pending_count }} submissions</small>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-2 mb-0">No submissions to grade! All caught up.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Announcements -->
+    <div class="col-lg-4">
+        <div class="card section-card h-100">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="mb-0">
+                    <i class="bi bi-megaphone"></i> My Announcements
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if teacher_announcements %}
+                <div class="list-group list-group-flush">
+                    {% for announcement in teacher_announcements %}
+                    <div class="list-group-item px-0 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h6 class="mb-1">{{ announcement.title }}</h6>
+                            {% if announcement.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </div>
+                        <p class="mb-1 small text-muted">{{ announcement.content|truncatewords:15 }}</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> {{ announcement.created_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'announcement_create' %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create Announcement
+                    </a>
+                    <a href="{% url 'announcement_list' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-list"></i> View All
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <i class="bi bi-megaphone-fill text-muted" style="font-size: 2rem;"></i>
+                    <p class="text-muted mt-2 mb-3">No active announcements</p>
+                    <a href="{% url 'announcement_create' %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create First Announcement
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Attendance & Recent Assignments -->
+<div class="row mb-4">
+    <!-- Recent Attendance -->
+    <div class="col-lg-6">
+        <div class="card section-card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check"></i> Recent Attendance (Last 7 Days)
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_attendance %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in recent_attendance %}
+                            <tr>
+                                <td><small>{{ attendance.date|date:"M d" }}</small></td>
+                                <td><small>{{ attendance.student.get_full_name|truncatewords:2 }}</small></td>
+                                <td><small>{{ attendance.course.course_code }}</small></td>
+                                <td>
+                                    {% if attendance.status == 'present' %}
+                                    <span class="badge bg-success">Present</span>
+                                    {% elif attendance.status == 'absent' %}
+                                    <span class="badge bg-danger">Absent</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Late</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 text-center py-3">No attendance records in the last 7 days.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="col-lg-6">
+        <div class="card section-card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-clipboard-check"></i> Recent Assignments
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if assignments %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Assignment</th>
+                                <th>Course</th>
+                                <th>Due Date</th>
+                                <th>Submissions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignments|slice:":8" %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'assignment_detail' assignment.id %}" class="text-decoration-none">
+                                        <small>{{ assignment.title|truncatewords:4 }}</small>
+                                    </a>
+                                </td>
+                                <td><small>{{ assignment.course.course_code }}</small></td>
+                                <td><small class="text-muted">{{ assignment.due_date|date:"M d" }}</small></td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ assignment.submissions.count }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 text-center py-3">No assignments created yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card section-card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-lightning-charge"></i> Quick Actions
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'course_create' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-plus-circle"></i><br>Create Course
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'attendance_mark' %}" class="btn btn-outline-success w-100">
+                    <i class="bi bi-calendar-check"></i><br>Mark Attendance
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'announcement_create' %}" class="btn btn-outline-info w-100">
+                    <i class="bi bi-megaphone"></i><br>New Announcement
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'feedback_list' %}" class="btn btn-outline-warning w-100">
+                    <i class="bi bi-chat-dots"></i><br>View Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

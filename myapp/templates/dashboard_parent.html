@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Parent Dashboard - Education Ecosystem{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-person-hearts"></i> Parent Dashboard
+        </h1>
+        <p class="lead">Welcome, {{ user.get_full_name|default:user.username }}!</p>
+    </div>
+</div>
+
+<!-- Linked Student Info -->
+<div class="card mb-4 border-primary">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-person"></i> Linked Student</h5>
+    </div>
+    <div class="card-body">
+        {% if linked_student %}
+        <h5>{{ linked_student.get_full_name|default:linked_student.username }}</h5>
+        <p class="mb-0">
+            <strong>Username:</strong> {{ linked_student.username }}<br>
+            <strong>Email:</strong> {{ linked_student.email }}
+        </p>
+        {% else %}
+        <div class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle"></i> No student linked to your account. Please contact the administrator.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if linked_student %}
+<!-- Student's Courses -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-book"></i> Student's Enrolled Courses</h5>
+    </div>
+    <div class="card-body">
+        {% if student_courses %}
+        <div class="row g-3">
+            {% for course in student_courses %}
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.course_code }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ course.title }}</h6>
+                        <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+                        <p class="mb-0">
+                            <strong>Teacher:</strong> {{ course.teacher.get_full_name|default:course.teacher.username }}
+                        </p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="bi bi-file-earmark-text"></i> {{ course.lessons.count }} Lessons |
+                            <i class="bi bi-clipboard-check"></i> {{ course.assignments.count }} Assignments
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">Student is not enrolled in any courses yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Student's Academic Performance -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Academic Performance</h5>
+    </div>
+    <div class="card-body">
+        {% if student_submissions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Course</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Marks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for submission in student_submissions %}
+                    <tr>
+                        <td>{{ submission.assignment.title }}</td>
+                        <td>{{ submission.assignment.course.course_code }}</td>
+                        <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if submission.status == 'graded' %}
+                            <span class="badge bg-success">Graded</span>
+                            {% else %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if submission.marks_obtained %}
+                            <strong>{{ submission.marks_obtained }}/{{ submission.assignment.max_marks }}</strong>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No submissions yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Conduct Reports -->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-person"></i> Conduct Reports</h5>
+    </div>
+    <div class="card-body">
+        {% if conduct_reports %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Behavior Rating</th>
+                        <th>Participation Rating</th>
+                        <th>Comments</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in conduct_reports %}
+                    <tr>
+                        <td>{{ report.course.course_code }}</td>
+                        <td>
+                            <span class="badge bg-primary">{{ report.behavior_rating }}/5</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ report.participation_rating }}/5</span>
+                        </td>
+                        <td>{{ report.comments|truncatewords:10 }}</td>
+                        <td>{{ report.date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No conduct reports available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Feedback Section -->
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Feedback & Communication</h5>
+    </div>
+    <div class="card-body">
+        <p>Share your concerns or feedback about your child's education</p>
+        <a href="{% url 'feedback_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Submit Feedback
+        </a>
+        <a href="{% url 'feedback_list' %}" class="btn btn-info">
+            <i class="bi bi-list"></i> View My Feedback
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

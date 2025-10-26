@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Course - Education Ecosystem{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Delete Course</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p>Are you sure you want to delete the course <strong>{{ course.title }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'course_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
