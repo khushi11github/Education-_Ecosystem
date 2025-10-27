@@ -169,13 +169,10 @@
 
 <!-- My Courses Section -->
 <div class="card section-card mb-4">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-primary text-white">
         <h5 class="mb-0">
             <i class="bi bi-book"></i> My Courses ({{ courses.count }})
         </h5>
-        <a href="{% url 'course_create' %}" class="btn btn-light btn-sm">
-            <i class="bi bi-plus-circle"></i> Create Course
-        </a>
     </div>
     <div class="card-body">
         {% if courses %}
@@ -447,8 +444,8 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-3 col-sm-6">
-                <a href="{% url 'course_create' %}" class="btn btn-outline-primary w-100">
-                    <i class="bi bi-plus-circle"></i><br>Create Course
+                <a href="#" onclick="showAssignmentModal(); return false;" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-universal-access"></i><br>Create Assignment<br><small>(Special Needs)</small>
                 </a>
             </div>
             <div class="col-md-3 col-sm-6">
@@ -469,5 +466,60 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for Creating Assignment -->
+<div class="modal fade" id="assignmentModal" tabindex="-1" aria-labelledby="assignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="assignmentModalLabel">
+                    <i class="bi bi-universal-access"></i> Create Assignment for Special Needs Students
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Select a course to create an accessible assignment with special accommodations.
+                </div>
+                
+                <div class="list-group">
+                    {% for course in courses %}
+                    <a href="{% url 'assignment_create' course.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="bi bi-book"></i> {{ course.course_code }} - {{ course.title }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-people"></i> {{ course.students.count }} students enrolled
+                                </small>
+                            </div>
+                            <span class="badge bg-primary">
+                                <i class="bi bi-arrow-right"></i> Create
+                            </span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> No courses available. Please contact admin to assign courses to you.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAssignmentModal() {
+    var modal = new bootstrap.Modal(document.getElementById('assignmentModal'));
+    modal.show();
+}
+</script>
 
 {% endblock %}

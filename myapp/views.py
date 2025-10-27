@@ -383,7 +383,7 @@ def course_detail(request, course_id):
 
 @login_required
 def course_enroll(request, course_id):
-    """Enroll students in course (Admin/Teacher)"""
+    """Enroll students in course (Admin/Teacher) - Redirect to course detail"""
     if request.user.profile.role not in ['admin', 'teacher']:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
@@ -397,10 +397,10 @@ def course_enroll(request, course_id):
             course.students.set(students)
             messages.success(request, 'Students enrolled successfully!')
             return redirect('course_detail', course_id=course.id)
-    else:
-        form = CourseEnrollmentForm(initial={'students': course.students.all()})
     
-    return render(request, 'course_enroll.html', {'form': form, 'course': course})
+    # Redirect to course detail page with info message
+    messages.info(request, 'Please manage student enrollment from the course detail page.')
+    return redirect('course_detail', course_id=course.id)
 
 
 @login_required
@@ -682,7 +682,7 @@ def feedback_list(request):
     else:
         feedbacks = Feedback.objects.filter(submitted_by=request.user)
     
-    return render(request, 'feedback.html', {'feedbacks': feedbacks})
+    return render(request, 'feedback_list.html', {'feedbacks': feedbacks})
 
 
 @login_required

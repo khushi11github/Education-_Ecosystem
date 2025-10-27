@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Assignment - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .form-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .accessibility-section {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 5px solid #4caf50;
+    }
+    .feature-checkbox {
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .feature-checkbox:hover {
+        border-color: #6BCB77;
+        background-color: #f1f8f4;
+        transform: translateX(5px);
+    }
+    .feature-checkbox input[type="checkbox"]:checked + label {
+        font-weight: bold;
+        color: #2e7d32;
+    }
+    .icon-badge {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.course_code }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Assignment</li>
+                </ol>
+            </nav>
+            <h1 class="mb-2">
+                <i class="bi bi-clipboard-plus"></i> Create Assignment
+            </h1>
+            <p class="text-muted">Create an accessible assignment for {{ course.title }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card form-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Assignment Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Accessibility Notice -->
+                    <div class="accessibility-section">
+                        <h6 class="mb-3">
+                            <i class="bi bi-universal-access icon-badge"></i>
+                            <strong>Accessibility Features for Special Needs Students</strong>
+                        </h6>
+                        <p class="mb-2">
+                            <i class="bi bi-info-circle"></i> This platform automatically provides:
+                        </p>
+                        <ul class="mb-0">
+                            <li>✓ Text-to-Speech support for all content</li>
+                            <li>✓ Adjustable font sizes and high contrast modes</li>
+                            <li>✓ Keyboard navigation support</li>
+                            <li>✓ Screen reader compatibility</li>
+                            <li>✓ Alternative submission formats (text, file upload)</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Course (Hidden) -->
+                        {{ form.course.as_hidden }}
+                        
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                <i class="bi bi-card-heading"></i> <strong>Assignment Title</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="{{ form.title.id_for_label }}" 
+                                   name="{{ form.title.name }}" 
+                                   value="{{ form.title.value|default:'' }}"
+                                   placeholder="e.g., Chapter 1 Review Questions"
+                                   required>
+                            {% if form.title.errors %}
+                                <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="bi bi-file-text"></i> <strong>Assignment Description</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" 
+                                      id="{{ form.description.id_for_label }}" 
+                                      name="{{ form.description.name }}" 
+                                      rows="6"
+                                      placeholder="Provide clear, detailed instructions. Use simple language for better accessibility."
+                                      required>{{ form.description.value|default:'' }}</textarea>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-lightbulb"></i> Tip: Use bullet points, clear headings, and simple language for better comprehension.
+                            </small>
+                            {% if form.description.errors %}
+                                <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <!-- Due Date -->
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar-event"></i> <strong>Due Date</strong>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="datetime-local" 
+                                       class="form-control" 
+                                       id="{{ form.due_date.id_for_label }}" 
+                                       name="{{ form.due_date.name }}" 
+                                       value="{{ form.due_date.value|default:'' }}"
+                                       required>
+                                {% if form.due_date.errors %}
+                                    <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Max Marks -->
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.max_marks.id_for_label }}" class="form-label">
+                                    <i class="bi bi-trophy"></i> <strong>Maximum Marks</strong>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="{{ form.max_marks.id_for_label }}" 
+                                       name="{{ form.max_marks.name }}" 
+                                       value="{{ form.max_marks.value|default:'100' }}"
+                                       min="1"
+                                       placeholder="100"
+                                       required>
+                                {% if form.max_marks.errors %}
+                                    <div class="text-danger mt-1">{{ form.max_marks.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Attachment (Optional) -->
+                        <div class="mb-4">
+                            <label for="{{ form.attachment.id_for_label }}" class="form-label">
+                                <i class="bi bi-paperclip"></i> <strong>Attachment (Optional)</strong>
+                            </label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="{{ form.attachment.id_for_label }}" 
+                                   name="{{ form.attachment.name }}">
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Supported formats: PDF, DOC, DOCX, TXT, Images. Max size: 10MB
+                            </small>
+                            {% if form.attachment.errors %}
+                                <div class="text-danger mt-1">{{ form.attachment.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Special Accommodations Section -->
+                        <div class="card mb-4" style="border: 2px solid #6BCB77;">
+                            <div class="card-header" style="background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%); color: white;">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-heart-fill"></i> Special Accommodations & Accessibility Notes
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> <strong>Recommended for Special Needs Students:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Provide extended time for submissions</li>
+                                        <li>Include alternative assessment methods</li>
+                                        <li>Use clear, step-by-step instructions</li>
+                                        <li>Offer visual aids and examples</li>
+                                        <li>Allow multiple submission attempts</li>
+                                        <li>Provide assignment rubric with clear criteria</li>
+                                    </ul>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="feature-checkbox">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="extendedTime" name="extended_time">
+                                                <label class="form-check-label" for="extendedTime">
+                                                    <i class="bi bi-clock-history text-primary"></i> Extended submission time
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-checkbox">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="alternativeFormat" name="alternative_format">
+                                                <label class="form-check-label" for="alternativeFormat">
+                                                    <i class="bi bi-file-earmark-text text-success"></i> Alternative format allowed
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-checkbox">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="visualAids" name="visual_aids">
+                                                <label class="form-check-label" for="visualAids">
+                                                    <i class="bi bi-images text-info"></i> Visual aids included
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-checkbox">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="audioInstructions" name="audio_instructions">
+                                                <label class="form-check-label" for="audioInstructions">
+                                                    <i class="bi bi-mic text-warning"></i> Audio instructions provided
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Create Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card mt-3" style="border-left: 4px solid #2196F3;">
+                <div class="card-body">
+                    <h6 class="mb-2">
+                        <i class="bi bi-question-circle text-primary"></i> Need Help?
+                    </h6>
+                    <p class="mb-0 small text-muted">
+                        For questions about creating accessible assignments, contact the accessibility coordinator 
+                        or refer to the <a href="#">Special Education Guidelines</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add visual feedback for checkbox selection
+document.querySelectorAll('.feature-checkbox input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const parent = this.closest('.feature-checkbox');
+        if (this.checked) {
+            parent.style.borderColor = '#6BCB77';
+            parent.style.backgroundColor = '#e8f5e9';
+        } else {
+            parent.style.borderColor = '#e0e0e0';
+            parent.style.backgroundColor = 'transparent';
+        }
+    });
+});
+</script>
+
+{% endblock %}
