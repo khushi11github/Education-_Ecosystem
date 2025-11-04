@@ -284,6 +284,12 @@ class Announcement(models.Model):
     def __str__(self):
         return self.title
     
+    def get_target_roles_list(self):
+        """Return target roles as a list"""
+        if self.target_roles == 'all':
+            return ['all']
+        return [role.strip() for role in self.target_roles.split(',') if role.strip()]
+    
     class Meta:
         ordering = ['-created_at']
 

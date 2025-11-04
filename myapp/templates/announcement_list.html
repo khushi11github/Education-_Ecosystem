@@ -184,7 +184,7 @@
                             {% if announcement.target_roles == 'all' %}
                                 <span class="badge-target badge-all">All Users</span>
                             {% else %}
-                                {% for role in announcement.target_roles.split:',' %}
+                                {% for role in announcement.get_target_roles_list %}
                                     <span class="badge-target badge-{{ role }}">
                                         {% if role == 'teacher' %}👨‍🏫 Teachers
                                         {% elif role == 'student' %}🎓 Students

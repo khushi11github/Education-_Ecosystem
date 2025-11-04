@@ -784,7 +784,7 @@ def attendance_list(request):
     status_filter = request.GET.get('status')
     
     # If no date filter is provided, default to today
-    if not date_filter:
+    if not date_filter or date_filter == '':
         date_filter = date_module.today().isoformat()
     
     # Base queryset
@@ -795,11 +795,12 @@ def attendance_list(request):
         attendance_records = Attendance.objects.filter(course__teacher=request.user)
         courses = Course.objects.filter(teacher=request.user)
     
-    # Apply filters
+    # Always apply date filter (defaults to today)
+    attendance_records = attendance_records.filter(date=date_filter)
+    
+    # Apply other filters
     if course_id:
         attendance_records = attendance_records.filter(course_id=course_id)
-    if date_filter:
-        attendance_records = attendance_records.filter(date=date_filter)
     if status_filter:
         attendance_records = attendance_records.filter(status=status_filter)
     
