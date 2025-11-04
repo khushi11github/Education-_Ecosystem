@@ -105,7 +105,7 @@
         </div>
         
         <div class="mt-4 d-flex gap-2">
-            <button type="submit" class="btn btn-success btn-lg">
+            <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
                 <i class="bi bi-check-circle"></i> Save Attendance
             </button>
             <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary btn-lg">
@@ -115,7 +115,110 @@
     </form>
 </div>
 
+<!-- Warning Alert for Duplicate Attendance (hidden by default) -->
+<div class="alert alert-warning alert-dismissible fade" id="duplicateWarning" role="alert" style="display: none; position: fixed; top: 80px; right: 20px; z-index: 1050; max-width: 400px;">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <strong>Attendance Already Marked!</strong>
+    <p class="mb-0 small">Attendance has already been recorded for this course and date. Submitting will update the existing records.</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
 <script>
+// Track if form is being submitted to prevent double submission
+let isSubmitting = false;
+
+// Form submission handler
+document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+    if (isSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+    
+    const courseId = document.querySelector('select[name="course"]').value;
+    const date = document.querySelector('input[name="date"]').value;
+    
+    if (!courseId || !date) {
+        e.preventDefault();
+        alert('Please select both course and date.');
+        return false;
+    }
+    
+    // Check if attendance already exists
+    checkExistingAttendance(courseId, date, function(exists) {
+        if (exists && !isSubmitting) {
+            const confirmed = confirm(
+                'Attendance has already been marked for this course and date.\n\n' +
+                'Do you want to UPDATE the existing records?\n\n' +
+                'Click OK to update, or Cancel to go back.'
+            );
+            
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        // Prevent double submission
+        isSubmitting = true;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+    });
+    
+    // If we got here without preventing default, allow form submission
+    if (!isSubmitting) {
+        e.preventDefault();
+    }
+});
+
+// Function to check if attendance already exists
+function checkExistingAttendance(courseId, date, callback) {
+    fetch(`/api/attendance/check/?course=${courseId}&date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            callback(data.exists);
+            if (data.exists) {
+                showDuplicateWarning();
+            }
+        })
+        .catch(error => {
+            console.log('Could not check existing attendance:', error);
+            callback(false); // Assume doesn't exist if check fails
+        });
+}
+
+// Show duplicate warning alert
+function showDuplicateWarning() {
+    const warning = document.getElementById('duplicateWarning');
+    warning.style.display = 'block';
+    warning.classList.add('show');
+    
+    // Auto-hide after 8 seconds
+    setTimeout(() => {
+        warning.classList.remove('show');
+        setTimeout(() => {
+            warning.style.display = 'none';
+        }, 150);
+    }, 8000);
+}
+
+// Check for duplicates when course or date changes
+document.querySelector('select[name="course"]').addEventListener('change', checkForDuplicates);
+document.querySelector('input[name="date"]').addEventListener('change', checkForDuplicates);
+
+function checkForDuplicates() {
+    const courseId = document.querySelector('select[name="course"]').value;
+    const date = document.querySelector('input[name="date"]').value;
+    
+    if (courseId && date) {
+        checkExistingAttendance(courseId, date, function(exists) {
+            if (exists) {
+                showDuplicateWarning();
+            }
+        });
+    }
+}
+
 document.getElementById('courseSelect').addEventListener('change', function() {
     const courseId = this.value;
     if (!courseId) {
@@ -128,20 +231,26 @@ document.getElementById('courseSelect').addEventListener('change', function() {
     
     // Fetch students for selected course
     fetch(`/api/course/${courseId}/students/`)
-        .then(response => response.json())
-        .then(students => {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const students = data.students || [];
             let html = '<h4 class="mb-3"><i class="bi bi-people"></i> Students</h4>';
             
             if (students.length === 0) {
                 html += '<p class="text-muted">No students enrolled in this course</p>';
             } else {
                 students.forEach(student => {
+                    const studentName = `${student.first_name} ${student.last_name}`;
                     html += `
                         <div class="student-row">
                             <div class="row align-items-center">
                                 <div class="col-md-4">
-                                    <strong><i class="bi bi-person-circle text-primary"></i> ${student.name}</strong>
-                                    <br><small class="text-muted">${student.username}</small>
+                                    <strong><i class="bi bi-person-circle text-primary"></i> ${studentName}</strong>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-flex gap-2">

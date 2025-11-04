@@ -97,7 +97,7 @@ def dashboard_view(request):
 
 @login_required
 def dashboard_admin(request):
-    """Admin Dashboard"""
+    """Admin Dashboard - Redirect to Django Admin Panel"""
     # Ensure profile exists
     profile, created = Profile.objects.get_or_create(
         user=request.user,
@@ -108,27 +108,9 @@ def dashboard_admin(request):
         messages.error(request, 'Access denied. Admin only.')
         return redirect('dashboard')
     
-    # Statistics
-    total_students = User.objects.filter(profile__role='student').count()
-    total_teachers = User.objects.filter(profile__role='teacher').count()
-    total_parents = User.objects.filter(profile__role='parent').count()
-    total_courses = Course.objects.count()
-    total_assignments = Assignment.objects.count()
-    pending_feedback = Feedback.objects.filter(status='pending').count()
-    compliance_reports = ComplianceReport.objects.all()[:5]
-    recent_announcements = Announcement.objects.filter(is_active=True)[:5]
-    
-    context = {
-        'total_students': total_students,
-        'total_teachers': total_teachers,
-        'total_parents': total_parents,
-        'total_courses': total_courses,
-        'total_assignments': total_assignments,
-        'pending_feedback': pending_feedback,
-        'compliance_reports': compliance_reports,
-        'recent_announcements': recent_announcements,
-    }
-    return render(request, 'dashboard_admin.html', context)
+    # Redirect admins to the built-in Django admin panel
+    messages.info(request, 'Welcome Admin! Redirecting to the administration panel.')
+    return redirect('/admin/')
 
 
 @login_required
@@ -794,10 +776,16 @@ def attendance_list(request):
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     
+    from datetime import date as date_module
+    
     # Get filter parameters
     course_id = request.GET.get('course')
     date_filter = request.GET.get('date')
     status_filter = request.GET.get('status')
+    
+    # If no date filter is provided, default to today
+    if not date_filter:
+        date_filter = date_module.today().isoformat()
     
     # Base queryset
     if request.user.profile.role == 'admin':
@@ -820,6 +808,8 @@ def attendance_list(request):
     context = {
         'attendance_records': attendance_records,
         'courses': courses,
+        'selected_date': date_filter,
+        'today': date_module.today().isoformat(),
     }
     return render(request, 'attendance_list.html', context)
 
@@ -843,6 +833,15 @@ def attendance_mark(request):
         
         course = get_object_or_404(Course, id=course_id)
         students = course.students.all()
+        
+        # Check if attendance already exists for this course and date
+        existing_count = Attendance.objects.filter(
+            course=course,
+            date=date
+        ).count()
+        
+        updated_count = 0
+        created_count = 0
         
         # Mark attendance for each student
         for student in students:
@@ -868,8 +867,15 @@ def attendance_mark(request):
                     attendance.remarks = remarks
                     attendance.marked_by = request.user
                     attendance.save()
+                    updated_count += 1
+                else:
+                    created_count += 1
         
-        messages.success(request, f'Attendance marked successfully for {course.course_code}!')
+        if updated_count > 0:
+            messages.warning(request, f'Attendance updated for {course.course_code}! {updated_count} records were updated, {created_count} new records created.')
+        else:
+            messages.success(request, f'Attendance marked successfully for {course.course_code}! {created_count} records created.')
+        
         return redirect('attendance_list')
     
     from datetime import date as date_module
@@ -989,17 +995,64 @@ def announcement_delete(request, announcement_id):
 @login_required
 def course_students_api(request, course_id):
     """API endpoint to get students in a course"""
-    course = get_object_or_404(Course, id=course_id)
-    
-    # Check permission
-    if request.user.profile.role not in ['admin', 'teacher']:
-        return JsonResponse({'error': 'Access denied'}, status=403)
-    
-    if request.user.profile.role == 'teacher' and course.teacher != request.user:
-        return JsonResponse({'error': 'Access denied'}, status=403)
-    
-    students = course.students.values('id', 'first_name', 'last_name')
-    students_list = list(students)
-    
-    return JsonResponse({'students': students_list})
+    try:
+        course = get_object_or_404(Course, id=course_id)
+        
+        # Check permission
+        if request.user.profile.role not in ['admin', 'teacher']:
+            return JsonResponse({'error': 'Access denied - insufficient permissions'}, status=403)
+        
+        if request.user.profile.role == 'teacher' and course.teacher != request.user:
+            return JsonResponse({'error': 'Access denied - not your course'}, status=403)
+        
+        # Get students enrolled in the course
+        students = course.students.all().values('id', 'first_name', 'last_name', 'username')
+        students_list = list(students)
+        
+        return JsonResponse({
+            'students': students_list,
+            'count': len(students_list),
+            'course': {
+                'id': course.id,
+                'title': course.title,
+                'code': course.course_code
+            }
+        })
+    except Exception as e:
+        return JsonResponse({
+            'error': 'Failed to load students',
+            'message': str(e)
+        }, status=500)
+
+
+@login_required
+def attendance_check_api(request):
+    """API endpoint to check if attendance already exists for a course and date"""
+    try:
+        course_id = request.GET.get('course')
+        date = request.GET.get('date')
+        
+        if not course_id or not date:
+            return JsonResponse({'exists': False})
+        
+        # Check if any attendance record exists for this course and date
+        exists = Attendance.objects.filter(
+            course_id=course_id,
+            date=date
+        ).exists()
+        
+        count = Attendance.objects.filter(
+            course_id=course_id,
+            date=date
+        ).count()
+        
+        return JsonResponse({
+            'exists': exists,
+            'count': count
+        })
+    except Exception as e:
+        return JsonResponse({
+            'exists': False,
+            'error': str(e)
+        })
 

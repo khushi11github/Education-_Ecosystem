@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submit Assignment - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' assignment.course.id %}">{{ assignment.course.title }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'assignment_detail' assignment.id %}">{{ assignment.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Submit Assignment</li>
+        </ol>
+    </nav>
+
+    <!-- Accessibility Notice -->
+    <div class="alert alert-info mb-4" role="alert">
+        <i class="fas fa-universal-access me-2"></i>
+        <strong>Accessibility Features Active:</strong>
+        <ul class="mb-0 mt-2">
+            <li>Use <strong>Tab</strong> key to navigate between form fields</li>
+            <li>Click the <i class="fas fa-volume-up"></i> button to hear instructions read aloud</li>
+            <li>Enable high contrast mode in settings if needed</li>
+            <li>Adjust font size using the controls in the navigation bar</li>
+            <li>Keyboard shortcut: <kbd>Ctrl + Enter</kbd> to submit form</li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Assignment Information Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-upload me-2"></i>
+                        Submit Assignment: {{ assignment.title }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Assignment Details Summary -->
+                    <div class="alert alert-light border mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong><i class="fas fa-book me-2"></i>Course:</strong> {{ assignment.course.title }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong><i class="fas fa-calendar me-2"></i>Due Date:</strong> 
+                                <span class="{% if assignment.due_date < today %}text-danger{% endif %}">
+                                    {{ assignment.due_date|date:"M d, Y h:i A" }}
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong><i class="fas fa-star me-2"></i>Max Marks:</strong> {{ assignment.max_marks }}
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong><i class="fas fa-user me-2"></i>Teacher:</strong> {{ assignment.course.teacher.get_full_name }}
+                            </div>
+                        </div>
+                        {% if assignment.due_date < today %}
+                        <div class="alert alert-warning mt-2 mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Note:</strong> This assignment is past due. Late submissions may receive reduced credit.
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Assignment Description -->
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-2">
+                            <i class="fas fa-info-circle me-2"></i>Assignment Description:
+                        </h6>
+                        <p class="border p-3 rounded bg-light">{{ assignment.description|linebreaks }}</p>
+                    </div>
+
+                    <!-- Submission Form -->
+                    <form method="post" enctype="multipart/form-data" id="submissionForm">
+                        {% csrf_token %}
+                        
+                        <!-- Comments/Notes Section -->
+                        <div class="mb-4">
+                            <label for="id_comments" class="form-label">
+                                <i class="fas fa-comment-alt me-2"></i>
+                                <strong>Your Comments/Notes</strong>
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="speakText('Add any comments or notes about your submission. Explain your work, challenges faced, or special considerations.')">
+                                    <i class="fas fa-volume-up"></i> Read
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-1" id="voiceInputBtn" onclick="startVoiceInput()">
+                                    <i class="fas fa-microphone"></i> <span id="voiceStatus">Speak</span>
+                                </button>
+                            </label>
+                            <textarea 
+                                name="comments" 
+                                id="id_comments" 
+                                class="form-control" 
+                                rows="5"
+                                placeholder="Explain your work, any challenges you faced, or special considerations the teacher should know about... (or click the microphone button to speak)"
+                                aria-describedby="commentsHelp"
+                            >{{ form.comments.value|default:'' }}</textarea>
+                            <div id="commentsHelp" class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Optional: Provide context about your work. Click <i class="fas fa-microphone"></i> to use voice input or type manually.
+                            </div>
+                        </div>
+
+                        <!-- File Upload Section -->
+                        <div class="mb-4">
+                            <label for="id_file" class="form-label">
+                                <i class="fas fa-paperclip me-2"></i>
+                                <strong>Attach Your Work</strong>
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="speakText('Upload your completed assignment file. Accepted formats include PDF, Word documents, images, and ZIP files.')">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </label>
+                            <input 
+                                type="file" 
+                                name="file" 
+                                id="id_file" 
+                                class="form-control" 
+                                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.zip"
+                                aria-describedby="fileHelp"
+                                required
+                            >
+                            <div id="fileHelp" class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Accepted formats: PDF, Word (.doc, .docx), Text (.txt), Images (.jpg, .png), ZIP files
+                                <br>
+                                <strong>Maximum file size: 10MB</strong>
+                            </div>
+                            <!-- File Preview Area -->
+                            <div id="filePreview" class="mt-2" style="display: none;">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>File selected:</strong> <span id="fileName"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Accommodations Reminder -->
+                        {% if assignment.special_accommodations %}
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-universal-access me-2"></i>
+                                Special Accommodations for This Assignment:
+                            </h6>
+                            <ul class="mb-0">
+                                {% if 'extended_time' in assignment.special_accommodations %}
+                                <li><i class="fas fa-clock me-2"></i>Extended time available</li>
+                                {% endif %}
+                                {% if 'alternative_format' in assignment.special_accommodations %}
+                                <li><i class="fas fa-file-alt me-2"></i>Alternative format accepted</li>
+                                {% endif %}
+                                {% if 'visual_aids' in assignment.special_accommodations %}
+                                <li><i class="fas fa-image me-2"></i>Visual aids encouraged</li>
+                                {% endif %}
+                                {% if 'audio_instructions' in assignment.special_accommodations %}
+                                <li><i class="fas fa-headphones me-2"></i>Audio instructions available</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <!-- Error Display -->
+                        {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Please fix the following errors:
+                            </h6>
+                            {{ form.errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-info me-2" onclick="saveDraft()">
+                                    <i class="fas fa-save me-2"></i>Save Draft
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar with Help and Tips -->
+        <div class="col-lg-4">
+            <!-- Submission Tips Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Submission Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Review your work</strong> before submitting
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Check file format</strong> is supported
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Add comments</strong> to explain your work
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Submit before due date</strong> to avoid penalties
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Save drafts</strong> as you work
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Need Help Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Need Help?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        <i class="fas fa-user-tie me-2"></i>
+                        Contact your teacher for assistance:
+                    </p>
+                    <p class="mb-2">
+                        <strong>{{ assignment.course.teacher.get_full_name }}</strong>
+                    </p>
+                    <p class="text-muted small mb-3">
+                        <i class="fas fa-envelope me-2"></i>
+                        {{ assignment.course.teacher.email }}
+                    </p>
+                    <a href="{% url 'feedback_list' %}" class="btn btn-sm btn-outline-info w-100">
+                        <i class="fas fa-comment me-2"></i>Send Feedback
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Interactivity and Accessibility -->
+<script>
+// Speech Recognition for Voice Input
+let recognition;
+let isRecording = false;
+
+function startVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!isRecording) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        const textarea = document.getElementById('id_comments');
+        const voiceBtn = document.getElementById('voiceInputBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        
+        let finalTranscript = textarea.value;
+
+        recognition.onstart = function() {
+            isRecording = true;
+            voiceBtn.classList.remove('btn-outline-danger');
+            voiceBtn.classList.add('btn-danger');
+            voiceStatus.textContent = 'Listening...';
+            speakText('Voice input started. Speak now.');
+        };
+
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            textarea.value = finalTranscript + interimTranscript;
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            stopVoiceInput();
+            if (event.error === 'no-speech') {
+                speakText('No speech detected. Please try again.');
+            } else if (event.error === 'not-allowed') {
+                alert('Microphone access is required. Please allow microphone access in your browser settings.');
+            } else {
+                speakText('Error occurred. Please try again.');
+            }
+        };
+
+        recognition.onend = function() {
+            stopVoiceInput();
+        };
+
+        recognition.start();
+    } else {
+        stopVoiceInput();
+    }
+}
+
+function stopVoiceInput() {
+    if (recognition) {
+        recognition.stop();
+    }
+    isRecording = false;
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    voiceBtn.classList.remove('btn-danger');
+    voiceBtn.classList.add('btn-outline-danger');
+    voiceStatus.textContent = 'Speak';
+    speakText('Voice input stopped.');
+}
+
+// File upload preview
+document.getElementById('id_file').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name;
+    if (fileName) {
+        document.getElementById('fileName').textContent = fileName;
+        document.getElementById('filePreview').style.display = 'block';
+        speakText('File selected: ' + fileName);
+    }
+});
+
+// Text-to-speech function
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Read entire page content
+function readPageContent() {
+    const title = document.querySelector('h4').textContent;
+    const description = "{{ assignment.description|escapejs }}";
+    const fullText = title + ". " + description + ". Please fill out the form and attach your completed work.";
+    speakText(fullText);
+}
+
+// Font size adjustment
+let currentFontSize = 16;
+function increaseFontSize() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + 'px';
+    speakText('Font size increased');
+}
+
+function decreaseFontSize() {
+    if (currentFontSize > 12) {
+        currentFontSize -= 2;
+        document.body.style.fontSize = currentFontSize + 'px';
+        speakText('Font size decreased');
+    }
+}
+
+// Save draft functionality (stores in localStorage)
+function saveDraft() {
+    const comments = document.getElementById('id_comments').value;
+    localStorage.setItem('draft_assignment_{{ assignment.id }}', comments);
+    alert('Draft saved! Your comments are saved locally.');
+    speakText('Draft saved successfully');
+}
+
+// Load draft on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const savedDraft = localStorage.getItem('draft_assignment_{{ assignment.id }}');
+    if (savedDraft) {
+        const loadDraft = confirm('A draft was found. Would you like to load it?');
+        if (loadDraft) {
+            document.getElementById('id_comments').value = savedDraft;
+            speakText('Draft loaded');
+        }
+    }
+});
+
+// Keyboard shortcut: Ctrl+Enter to submit
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('submissionForm').submit();
+    }
+});
+
+// Form submission confirmation
+document.getElementById('submissionForm').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('id_file');
+    if (!fileInput.files.length) {
+        e.preventDefault();
+        alert('Please attach a file before submitting.');
+        speakText('Please attach a file before submitting');
+        return false;
+    }
+    
+    const confirmed = confirm('Are you sure you want to submit this assignment? You cannot modify it after submission.');
+    if (confirmed) {
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        speakText('Submitting your assignment');
+        // Clear draft after successful submission
+        localStorage.removeItem('draft_assignment_{{ assignment.id }}');
+    } else {
+        e.preventDefault();
+    }
+});
+
+// Page loaded - no auto-announcement
+window.addEventListener('load', function() {
+    // Form is ready, but don't auto-speak
+    console.log('Assignment submission form loaded');
+});
+</script>
+
+<style>
+/* Enhanced form styling for accessibility */
+.form-control:focus {
+    border-color: #6BCB77;
+    box-shadow: 0 0 0 0.25rem rgba(107, 203, 119, 0.25);
+}
+
+/* Large touch targets for buttons */
+.btn {
+    min-height: 44px;
+    padding: 10px 20px;
+}
+
+/* Visual feedback for file input */
+#id_file {
+    border: 2px dashed #6BCB77;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+#id_file:hover {
+    border-color: #4D96A9;
+    background-color: #f8f9fa;
+}
+
+/* Keyboard navigation highlight */
+*:focus {
+    outline: 3px solid #6BCB77;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+body.high-contrast .card {
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .form-control {
+    border: 2px solid #FFFFFF !important;
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .alert {
+    border: 2px solid #FFFFFF !important;
+}
+
+/* Smooth animations */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

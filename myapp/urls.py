@@ -68,4 +68,5 @@ urlpatterns = [
     
     # API Endpoints
     path('api/course/<int:course_id>/students/', views.course_students_api, name='course_students_api'),
+    path('api/attendance/check/', views.attendance_check_api, name='attendance_check_api'),
 ]

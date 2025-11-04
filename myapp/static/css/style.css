@@ -58,22 +58,98 @@ body.high-contrast {
     color: #FFFFFF !important;
 }
 
+body.high-contrast * {
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .navbar-main {
+    background: #1A1A1A !important;
+    border-bottom: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .navbar-brand {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+
+body.high-contrast .card,
 body.high-contrast .dashboard-card {
     background: #1A1A1A !important;
     border: 2px solid #FFFFFF !important;
     color: #FFFFFF !important;
 }
 
+body.high-contrast .card-header {
+    background: #333333 !important;
+    color: #FFFFFF !important;
+    border-bottom: 2px solid #FFFFFF !important;
+}
+
 body.high-contrast .table {
     color: #FFFFFF !important;
+    background: #1A1A1A !important;
 }
 
 body.high-contrast .table th {
     background: #333333 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #FFFFFF !important;
 }
 
-body.high-contrast .text-muted {
+body.high-contrast .table td {
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+    border: 1px solid #666666 !important;
+}
+
+body.high-contrast .text-muted,
+body.high-contrast .text-secondary {
     color: #CCCCCC !important;
+}
+
+body.high-contrast .btn {
+    background: #333333 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .btn:hover {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .badge {
+    background: #333333 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #FFFFFF !important;
+}
+
+body.high-contrast a {
+    color: #FFFF00 !important;
+    text-decoration: underline !important;
+}
+
+body.high-contrast .alert {
+    background: #333333 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .form-control,
+body.high-contrast .form-select {
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .modal-content {
+    background: #1A1A1A !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .list-group-item {
+    background: #1A1A1A !important;
+    border: 1px solid #FFFFFF !important;
 }
 
 /* Professional Header with Glass Effect */

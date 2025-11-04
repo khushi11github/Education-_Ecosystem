@@ -74,8 +74,21 @@
 </style>
 
 <div class="attendance-header">
-    <h1><i class="bi bi-calendar-check"></i> Attendance Management</h1>
-    <p class="mb-0">Track and manage student attendance</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-calendar-check"></i> Attendance Management</h1>
+            <p class="mb-0">
+                {% if selected_date == today %}
+                <i class="bi bi-calendar-day"></i> Showing Today's Attendance ({{ selected_date }})
+                {% else %}
+                <i class="bi bi-calendar-date"></i> Showing Attendance for {{ selected_date }}
+                {% endif %}
+            </p>
+        </div>
+        <a href="{% url 'attendance_mark' %}" class="btn btn-light btn-lg">
+            <i class="bi bi-plus-circle"></i> Mark Attendance
+        </a>
+    </div>
 </div>
 
 {% if messages %}
@@ -103,7 +116,8 @@
         </div>
         <div class="col-md-3">
             <label class="form-label"><i class="bi bi-calendar"></i> Date</label>
-            <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
+            <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+            <small class="text-muted">Default: Today</small>
         </div>
         <div class="col-md-3">
             <label class="form-label"><i class="bi bi-filter"></i> Status</label>
@@ -114,20 +128,18 @@
                 <option value="late" {% if request.GET.status == "late" %}selected{% endif %}>Late</option>
             </select>
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">
+        <div class="col-md-2 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">
                 <i class="bi bi-search"></i> Filter
             </button>
+            <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary" title="Reset filters">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
         </div>
     </form>
 </div>
 
-<!-- Mark Attendance Button -->
-<div class="mb-4">
-    <a href="{% url 'attendance_mark' %}" class="btn btn-mark">
-        <i class="bi bi-plus-circle"></i> Mark Attendance
-    </a>
-</div>
+<!-- Mark Attendance Button - Removed (now in header) -->
 
 <!-- Attendance Records -->
 <div class="row">

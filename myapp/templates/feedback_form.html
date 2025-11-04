@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'feedback_list' %}">Feedback</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Submit Feedback</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Feedback Form Card -->
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-comment-dots me-2"></i>
+                        Submit Your Feedback
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Info Alert -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Your Voice Matters!</strong> Share your thoughts, concerns, or suggestions to help us improve the learning experience for all students.
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <form method="post" id="feedbackForm">
+                        {% csrf_token %}
+                        
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label for="id_category" class="form-label">
+                                <i class="fas fa-tag me-2"></i>
+                                <strong>Feedback Category</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select 
+                                name="category" 
+                                id="id_category" 
+                                class="form-select" 
+                                required
+                                aria-describedby="categoryHelp"
+                            >
+                                <option value="">-- Select Category --</option>
+                                <option value="course">📚 Course Content</option>
+                                <option value="accessibility">♿ Accessibility Features</option>
+                                <option value="technical">🔧 Technical Issues</option>
+                                <option value="other">💬 Other</option>
+                            </select>
+                            <div id="categoryHelp" class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Choose the category that best describes your feedback
+                            </div>
+                        </div>
+
+                        <!-- Subject/Title -->
+                        <div class="mb-4">
+                            <label for="id_subject" class="form-label">
+                                <i class="fas fa-heading me-2"></i>
+                                <strong>Subject</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="subject" 
+                                id="id_subject" 
+                                class="form-control" 
+                                placeholder="Brief subject of your feedback..."
+                                required
+                                maxlength="200"
+                                aria-describedby="subjectHelp"
+                            >
+                            <div id="subjectHelp" class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Provide a short, descriptive title for your feedback
+                            </div>
+                        </div>
+
+                        <!-- Message/Details -->
+                        <div class="mb-4">
+                            <label for="id_message" class="form-label">
+                                <i class="fas fa-comment-alt me-2"></i>
+                                <strong>Your Message</strong>
+                                <span class="text-danger">*</span>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="voiceInputBtn" onclick="startVoiceInput()">
+                                    <i class="fas fa-microphone"></i> <span id="voiceStatus">Speak</span>
+                                </button>
+                            </label>
+                            <textarea 
+                                name="message" 
+                                id="id_message" 
+                                class="form-control" 
+                                rows="8"
+                                placeholder="Describe your feedback in detail... (or click the microphone to speak)"
+                                required
+                                aria-describedby="messageHelp"
+                            ></textarea>
+                            <div id="messageHelp" class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Please provide as much detail as possible. Click <i class="fas fa-microphone"></i> to use voice input.
+                            </div>
+                        </div>
+
+                        <!-- Error Display -->
+                        {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Please fix the following errors:
+                            </h6>
+                            {{ form.errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'feedback_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar with Tips -->
+        <div class="col-lg-4">
+            <!-- Feedback Tips Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Feedback Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Be specific</strong> about the issue or suggestion
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Include examples</strong> when relevant
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Choose the right category</strong> for faster response
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Be constructive</strong> in your comments
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Check existing feedback</strong> to avoid duplicates
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Categories Explanation Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Category Guide
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>📚 Course Content</strong>
+                        <p class="small text-muted mb-0">Issues or suggestions about lessons, materials, or assignments</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>♿ Accessibility Features</strong>
+                        <p class="small text-muted mb-0">Feedback on text-to-speech, high contrast, or other accessibility tools</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>🔧 Technical Issues</strong>
+                        <p class="small text-muted mb-0">Bugs, errors, or technical problems with the platform</p>
+                    </div>
+                    <div class="mb-0">
+                        <strong>💬 Other</strong>
+                        <p class="small text-muted mb-0">General feedback, suggestions, or anything else</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Info Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>Need Immediate Help?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        For urgent issues, please contact:
+                    </p>
+                    <p class="mb-2">
+                        <strong><i class="fas fa-user-tie me-2"></i>Support Team</strong>
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Response time: 24-48 hours
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Voice Input and Form Handling -->
+<script>
+// Speech Recognition for Voice Input
+let recognition;
+let isRecording = false;
+
+function startVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!isRecording) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        const textarea = document.getElementById('id_message');
+        const voiceBtn = document.getElementById('voiceInputBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        
+        let finalTranscript = textarea.value;
+
+        recognition.onstart = function() {
+            isRecording = true;
+            voiceBtn.classList.remove('btn-outline-danger');
+            voiceBtn.classList.add('btn-danger');
+            voiceStatus.textContent = 'Listening...';
+        };
+
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            textarea.value = finalTranscript + interimTranscript;
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            stopVoiceInput();
+            if (event.error === 'no-speech') {
+                alert('No speech detected. Please try again.');
+            } else if (event.error === 'not-allowed') {
+                alert('Microphone access is required. Please allow microphone access in your browser settings.');
+            }
+        };
+
+        recognition.onend = function() {
+            stopVoiceInput();
+        };
+
+        recognition.start();
+    } else {
+        stopVoiceInput();
+    }
+}
+
+function stopVoiceInput() {
+    if (recognition) {
+        recognition.stop();
+    }
+    isRecording = false;
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    voiceBtn.classList.remove('btn-danger');
+    voiceBtn.classList.add('btn-outline-danger');
+    voiceStatus.textContent = 'Speak';
+}
+
+// Form submission confirmation
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    const category = document.getElementById('id_category').value;
+    const subject = document.getElementById('id_subject').value;
+    const message = document.getElementById('id_message').value;
+    
+    if (!category || !subject || !message) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+        return false;
+    }
+    
+    // Disable submit button to prevent double submission
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+});
+
+// Character counter for subject (optional)
+document.getElementById('id_subject').addEventListener('input', function(e) {
+    const maxLength = 200;
+    const currentLength = e.target.value.length;
+    const remaining = maxLength - currentLength;
+    
+    // You can add a character counter display here if desired
+    console.log(`Characters remaining: ${remaining}`);
+});
+</script>
+
+<style>
+/* Enhanced form styling */
+.form-control:focus,
+.form-select:focus {
+    border-color: #6BCB77;
+    box-shadow: 0 0 0 0.25rem rgba(107, 203, 119, 0.25);
+}
+
+/* Large touch targets for accessibility */
+.btn {
+    min-height: 44px;
+    padding: 10px 20px;
+}
+
+/* Keyboard navigation highlight */
+*:focus {
+    outline: 3px solid #6BCB77;
+    outline-offset: 2px;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* High contrast mode support */
+body.high-contrast .card {
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .form-control,
+body.high-contrast .form-select {
+    border: 2px solid #FFFFFF !important;
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .alert {
+    border: 2px solid #FFFFFF !important;
+}
+</style>
+{% endblock %}

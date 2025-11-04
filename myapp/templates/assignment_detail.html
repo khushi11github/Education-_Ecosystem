@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assignment.title }} - Education Ecosystem{% endblock %}
+
+{% block content %}
+<style>
+    .assignment-header {
+        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .submission-card {
+        border-left: 4px solid #6BCB77;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    .submission-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #2196F3;
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' assignment.course.id %}">{{ assignment.course.course_code }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ assignment.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Assignment Header -->
+    <div class="assignment-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3">
+                    <i class="bi bi-clipboard-check"></i> {{ assignment.title }}
+                </h1>
+                <p class="mb-2">
+                    <i class="bi bi-book"></i> <strong>Course:</strong> {{ assignment.course.course_code }} - {{ assignment.course.title }}
+                </p>
+                <p class="mb-2">
+                    <i class="bi bi-person-circle"></i> <strong>Created by:</strong> {{ assignment.created_by.get_full_name|default:assignment.created_by.username }}
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="card bg-white text-dark">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Due Date</h6>
+                        <h4 class="mb-0">
+                            <i class="bi bi-calendar-event text-warning"></i> 
+                            {{ assignment.due_date|date:"M d, Y" }}
+                        </h4>
+                        <small class="text-muted">{{ assignment.due_date|date:"h:i A" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Assignment Details -->
+        <div class="col-lg-8">
+            <!-- Assignment Description -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-text"></i> Assignment Description
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div style="white-space: pre-line;">{{ assignment.description }}</div>
+                    
+                    {% if assignment.attachment %}
+                    <hr>
+                    <div class="alert alert-info mb-0">
+                        <h6 class="mb-2"><i class="bi bi-paperclip"></i> Attachment:</h6>
+                        <a href="{{ assignment.attachment.url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="bi bi-download"></i> Download Attachment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Student Submission Section (Only for Students) -->
+            {% if user.profile.role == 'student' %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-upload"></i> Your Submission
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user_submission %}
+                        <div class="alert alert-success">
+                            <h6><i class="bi bi-check-circle"></i> Submission Status: 
+                                {% if user_submission.status == 'graded' %}
+                                    <span class="badge bg-success">Graded</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pending Review</span>
+                                {% endif %}
+                            </h6>
+                            <p class="mb-2"><strong>Submitted on:</strong> {{ user_submission.submitted_at|date:"M d, Y H:i" }}</p>
+                            
+                            {% if user_submission.submission_text %}
+                            <p class="mb-2"><strong>Your Answer:</strong></p>
+                            <div class="bg-light p-3 rounded" style="white-space: pre-line;">{{ user_submission.submission_text }}</div>
+                            {% endif %}
+                            
+                            {% if user_submission.file %}
+                            <p class="mb-2 mt-3"><strong>Uploaded File:</strong></p>
+                            <a href="{{ user_submission.file.url }}" target="_blank" class="btn btn-sm btn-info">
+                                <i class="bi bi-file-earmark"></i> View Submitted File
+                            </a>
+                            {% endif %}
+                            
+                            {% if user_submission.status == 'graded' %}
+                            <hr>
+                            <h6 class="text-success"><i class="bi bi-trophy"></i> Grade</h6>
+                            <h3 class="text-success">{{ user_submission.marks_obtained }} / {{ assignment.max_marks }}</h3>
+                            
+                            {% if user_submission.teacher_remarks %}
+                            <p class="mb-2 mt-3"><strong>Teacher's Remarks:</strong></p>
+                            <div class="alert alert-info">{{ user_submission.teacher_remarks }}</div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="info-box">
+                            <h6><i class="bi bi-info-circle"></i> You haven't submitted this assignment yet</h6>
+                            <p class="mb-3">Click the button below to submit your work.</p>
+                            <a href="{% url 'submission_create' assignment.id %}" class="btn btn-success">
+                                <i class="bi bi-upload"></i> Submit Assignment
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submissions List (For Teachers) -->
+            {% if user.profile.role in 'admin,teacher' %}
+            <div class="card">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people"></i> Student Submissions ({{ submissions.count }})
+                    </h5>
+                    <span class="badge bg-light text-dark">{{ submissions.count }} / {{ assignment.course.students.count }}</span>
+                </div>
+                <div class="card-body">
+                    {% if submissions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Submitted At</th>
+                                    <th>Status</th>
+                                    <th>Grade</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-person-circle"></i>
+                                        {{ submission.student.get_full_name|default:submission.student.username }}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i> {{ submission.submitted_at|date:"M d, Y H:i" }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if submission.status == 'graded' %}
+                                        <span class="badge bg-success">Graded</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if submission.marks_obtained %}
+                                        <strong class="text-success">{{ submission.marks_obtained }}/{{ assignment.max_marks }}</strong>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'submission_grade' submission.id %}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil-square"></i> 
+                                            {% if submission.status == 'graded' %}Review{% else %}Grade{% endif %}
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="text-muted mt-3 mb-0">No submissions yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Info Cards -->
+        <div class="col-lg-4">
+            <!-- Assignment Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Assignment Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Maximum Marks</small>
+                        <h4 class="mb-0 text-primary">{{ assignment.max_marks }}</h4>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Course Code</small>
+                        <strong>{{ assignment.course.course_code }}</strong>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Created On</small>
+                        <strong>{{ assignment.created_at|date:"M d, Y" }}</strong>
+                    </div>
+                    {% if user.profile.role in 'admin,teacher' %}
+                    <hr>
+                    <div class="mb-0">
+                        <small class="text-muted d-block">Total Students</small>
+                        <strong>{{ assignment.course.students.count }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightning"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'course_detail' assignment.course.id %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Course
+                        </a>
+                        
+                        {% if user.profile.role == 'student' and not user_submission %}
+                        <a href="{% url 'submission_create' assignment.id %}" class="btn btn-success">
+                            <i class="bi bi-upload"></i> Submit Assignment
+                        </a>
+                        {% endif %}
+                        
+                        {% if user.profile.role in 'admin,teacher' %}
+                        <a href="{% url 'course_detail' assignment.course.id %}" class="btn btn-outline-info">
+                            <i class="bi bi-eye"></i> View All Assignments
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessibility Notice -->
+            <div class="card mt-4 border-success">
+                <div class="card-body">
+                    <h6 class="text-success">
+                        <i class="bi bi-universal-access"></i> Accessibility Features
+                    </h6>
+                    <ul class="small mb-0">
+                        <li>Use text-to-speech for reading</li>
+                        <li>Adjust font size as needed</li>
+                        <li>Enable high contrast mode</li>
+                        <li>Keyboard navigation supported</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
