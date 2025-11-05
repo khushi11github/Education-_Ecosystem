@@ -9,7 +9,6 @@ urlpatterns = [
     
     # Dashboards
     path('dashboard/', views.dashboard_view, name='dashboard'),
-    path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),
     path('dashboard/teacher/', views.dashboard_teacher, name='dashboard_teacher'),
     path('dashboard/student/', views.dashboard_student, name='dashboard_student'),
     path('dashboard/parent/', views.dashboard_parent, name='dashboard_parent'),

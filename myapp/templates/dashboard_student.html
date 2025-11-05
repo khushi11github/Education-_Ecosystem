@@ -221,7 +221,7 @@
         box-shadow: 0 20px 40px rgba(107, 203, 119, 0.3);
     }
     
-    /* Decorative Elements */
+
     .decorative-shape {
         position: fixed;
         border-radius: 50%;
@@ -267,44 +267,53 @@
     </div>
 </div>
 
-<!-- My Courses -->
+<!-- Enrolled Courses -->
 <div class="card mb-4 animated-card">
-    <div class="card-header bg-success text-white">
-        <h5 class="mb-0"><i class="bi bi-book icon-float"></i> My Enrolled Courses</h5>
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-book icon-float"></i> My Enrolled Courses ({{ enrolled_courses.count }})</h5>
     </div>
     <div class="card-body">
         {% if enrolled_courses %}
         <div class="row g-3">
             {% for course in enrolled_courses %}
             <div class="col-md-6">
-                <div class="card h-100 course-card">
+                <div class="card course-card h-100 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">{{ course.course_code }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ course.title }}</h6>
-                        <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                        <h5 class="card-title">
+                            <i class="bi bi-mortarboard text-primary"></i> {{ course.title }}
+                        </h5>
                         <p class="mb-2">
+                            <span class="badge bg-primary">{{ course.course_code }}</span>
+                        </p>
+                        <p class="card-text text-muted small">{{ course.description|truncatewords:20 }}</p>
+                        <p class="mb-2">
+                            <i class="bi bi-person-fill text-info"></i> 
                             <strong>Teacher:</strong> {{ course.teacher.get_full_name|default:course.teacher.username }}
                         </p>
                         <div class="d-flex gap-2">
                             <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-eye"></i> View Course
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                            <a href="{% url 'course_detail' course.id %}#lessons" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-journal-text"></i> Lessons
                             </a>
                         </div>
                     </div>
-                    <div class="card-footer text-muted">
-                        <small>
-                            <i class="bi bi-file-earmark-text"></i> <span class="stats-number">{{ course.lessons.count }}</span> Lessons |
-                            <i class="bi bi-clipboard-check"></i> <span class="stats-number">{{ course.assignments.count }}</span> Assignments
-                        </small>
+                    <div class="card-footer text-muted small">
+                        <i class="bi bi-calendar-plus"></i> Enrolled: {{ course.created_at|date:"M d, Y" }}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle icon-pulse"></i> You are not enrolled in any courses yet.
-        </div>
+        <di class="text-center py-4">
+            <i class="bi bi-inbox icon-float" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mb-0 mt-3">
+                <i class="bi bi-info-circle"></i> You are not enrolled in any courses yet. 
+                Please contact your teacher or administrator for enrollment.
+            </p>
+        </di>
         {% endif %}
     </div>
 </div>

@@ -76,7 +76,7 @@ class AdminUserCreateForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
-            # Create or update profile with role
+           
             profile, created = Profile.objects.get_or_create(user=user)
             profile.role = self.cleaned_data['role']
             profile.save()
