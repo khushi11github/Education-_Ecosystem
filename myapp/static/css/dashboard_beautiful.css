@@ -3,6 +3,21 @@
    Same style as Courses page with soft shadows and rounded design
    ============================================================================ */
 
+/* DISABLE ALL ANIMATIONS, TRANSFORMS AND TRANSITIONS */
+* {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+*:hover,
+*:focus,
+*:active {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
 /* CSS Custom Properties - Soft Pastel Color Palette */
 :root {
     /* Soft Pastel Backgrounds */
@@ -601,3 +616,246 @@ body {
     padding-left: var(--spacing-xl);
     padding-right: var(--spacing-xl);
 }
+
+/* ============================================================================
+   HIGH CONTRAST MODE - Accessibility Override
+   ============================================================================ */
+
+body.high-contrast {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .dashboard-header,
+body.high-contrast .section-card,
+body.high-contrast .metric-box,
+body.high-contrast .card,
+body.high-contrast .form-card {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast .dashboard-header::before {
+    display: none !important;
+}
+
+body.high-contrast .dashboard-header h1,
+body.high-contrast .dashboard-header p,
+body.high-contrast .dashboard-header .lead,
+body.high-contrast .section-card h5,
+body.high-contrast .section-card .card-header h5,
+body.high-contrast .metric-label,
+body.high-contrast .metric-number,
+body.high-contrast h1, body.high-contrast h2, body.high-contrast h3,
+body.high-contrast h4, body.high-contrast h5, body.high-contrast h6,
+body.high-contrast p, body.high-contrast span, body.high-contrast div,
+body.high-contrast td, body.high-contrast th, body.high-contrast label {
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .text-muted,
+body.high-contrast small {
+    color: #FFFF00 !important;
+}
+
+body.high-contrast .section-card .card-header {
+    background: #1A1A1A !important;
+    border-bottom: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .metric-icon {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .metric-box-courses .metric-icon {
+    background: #FF0000 !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .metric-box-students .metric-icon {
+    background: #00FF00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .metric-box-assignments .metric-icon {
+    background: #0000FF !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .metric-box-pending .metric-icon {
+    background: #FFFF00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .btn,
+body.high-contrast .btn-primary,
+body.high-contrast .btn-outline-primary,
+body.high-contrast button {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 3px solid #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+body.high-contrast .btn:hover,
+body.high-contrast .btn-primary:hover,
+body.high-contrast .btn-outline-primary:hover {
+    background: #FFFF00 !important;
+    color: #000000 !important;
+    border: 3px solid #FFFF00 !important;
+}
+
+body.high-contrast .table {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .table thead {
+    background: #1A1A1A !important;
+}
+
+body.high-contrast .table th {
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .table td {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #FFFFFF !important;
+}
+
+body.high-contrast .table tbody tr {
+    border-bottom: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .badge {
+    border: 2px solid #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+body.high-contrast .badge.bg-success {
+    background: #00FF00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .badge.bg-danger {
+    background: #FF0000 !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .badge.bg-warning {
+    background: #FFFF00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .badge.bg-primary,
+body.high-contrast .badge.bg-info,
+body.high-contrast .badge.bg-secondary {
+    background: #0000FF !important;
+    color: #FFFFFF !important;
+}
+
+body.high-contrast .list-group-item {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .alert {
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .alert-info {
+    border-color: #0000FF !important;
+}
+
+body.high-contrast .alert-warning {
+    border-color: #FFFF00 !important;
+}
+
+body.high-contrast .progress {
+    background: #1A1A1A !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .progress-bar,
+body.high-contrast .progress-bar.bg-success {
+    background: #00FF00 !important;
+}
+
+body.high-contrast .form-control,
+body.high-contrast .form-select,
+body.high-contrast input,
+body.high-contrast textarea,
+body.high-contrast select {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast a {
+    color: #00FFFF !important;
+    text-decoration: underline !important;
+}
+
+body.high-contrast a:hover {
+    color: #FFFF00 !important;
+}
+
+body.high-contrast .modal-content {
+    background: #000000 !important;
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .modal-header {
+    background: #1A1A1A !important;
+    border-bottom: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .section-card .row.text-center.mb-3 > div {
+    background: #1A1A1A !important;
+    border: 2px solid #FFFFFF !important;
+}
+
+body.high-contrast .section-card .row.text-center.mb-3 h3 {
+    color: #FFFFFF !important;
+    font-weight: 900 !important;
+}
+
+body.high-contrast i,
+body.high-contrast .bi {
+    color: inherit !important;
+}
+
+/* Ensure icons in high contrast mode are visible */
+body.high-contrast .btn i,
+body.high-contrast .btn .bi {
+    color: #000000 !important;
+}
+
+body.high-contrast .btn:hover i,
+body.high-contrast .btn:hover .bi {
+    color: #000000 !important;
+}
+
+body.high-contrast .card-body .row.g-3 .btn {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 3px solid #FFFFFF !important;
+}
+
+body.high-contrast .card-body .row.g-3 .btn:hover {
+    background: #FFFF00 !important;
+    color: #000000 !important;
+    border: 3px solid #FFFF00 !important;
+}
+

@@ -103,10 +103,11 @@ class LessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
         fields = ['course', 'title', 'description', 'content_type', 'text_content', 
-                  'file', 'alt_text', 'transcript', 'order']
+                  'video_url', 'file', 'alt_text', 'transcript', 'order']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
             'text_content': forms.Textarea(attrs={'rows': 5}),
+            'video_url': forms.URLInput(attrs={'placeholder': 'https://www.youtube.com/watch?v=...'}),
             'alt_text': forms.Textarea(attrs={'rows': 2}),
             'transcript': forms.Textarea(attrs={'rows': 4}),
         }

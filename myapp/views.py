@@ -455,7 +455,32 @@ def lesson_create(request, course_id):
 def lesson_detail(request, lesson_id):
     """View lesson details"""
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    return render(request, 'lesson_detail.html', {'lesson': lesson})
+    
+    # Extract YouTube video ID if present
+    youtube_id = None
+    if lesson.video_url:
+        import re
+        # Remove whitespace
+        url = lesson.video_url.strip()
+        
+        # Try multiple YouTube URL patterns
+        patterns = [
+            r'(?:https?://)?(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})',
+            r'(?:https?://)?(?:www\.)?youtu\.be/([a-zA-Z0-9_-]{11})',
+            r'(?:https?://)?(?:www\.)?youtube\.com/embed/([a-zA-Z0-9_-]{11})',
+            r'(?:https?://)?(?:www\.)?youtube\.com/v/([a-zA-Z0-9_-]{11})',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                youtube_id = match.group(1)
+                break
+    
+    return render(request, 'lesson_detail.html', {
+        'lesson': lesson,
+        'youtube_id': youtube_id
+    })
 
 
 @login_required

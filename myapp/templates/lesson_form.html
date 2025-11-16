@@ -1,343 +1,174 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{% if form.instance.pk %}Edit Lesson{% else %}Create Lesson{% endif %} - Education Ecosystem{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_beautiful.css' %}">
+{% endblock %}
+
 {% block content %}
-<style>
-    :root {
-        --cream: #fefdfa;
-        --lavender: #b19cd9;
-        --lavender-light: #d4c5f9;
-        --lavender-lighter: #e8e0ff;
-        --mint: #a7e9af;
-        --mint-light: #d4f4dd;
-        --peach: #ffb3a7;
-        --pale-yellow: #fff4b8;
-        --text-dark: #3e3e4a;
-        --text-muted: #8a8a9e;
-        --shadow-light: -6px -6px 14px rgba(255,255,255,0.9);
-        --shadow-dark: 6px 6px 14px rgba(174,174,192,0.4);
-    }
-    
-    body {
-        background: var(--cream);
-        font-family: 'Nunito', sans-serif;
-    }
-    
-    .page-header {
-        background: linear-gradient(135deg, var(--mint) 0%, var(--mint-light) 100%);
-        color: white;
-        padding: 2.5rem 2rem;
-        border-radius: 40px;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-light), var(--shadow-dark);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .page-header::before {
-        content: '';
-        position: absolute;
-        top: -40%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        animation: float 7s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-25px); }
-    }
-    
-    .page-header h1 {
-        color: var(--text-dark);
-        margin: 0 0 0.5rem 0;
-        font-weight: 800;
-        font-size: 2.25rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .page-header .lead {
-        color: var(--text-dark);
-        margin: 0;
-        font-size: 1.1rem;
-        position: relative;
-        z-index: 1;
-        font-weight: 600;
-    }
-    
-    .form-card {
-        background: var(--cream);
-        border-radius: 32px;
-        padding: 2.5rem;
-        box-shadow: var(--shadow-light), var(--shadow-dark);
-        margin-bottom: 2rem;
-    }
-    
-    .form-label {
-        color: var(--text-dark);
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .form-control,
-    .form-select {
-        padding: 0.875rem 1.25rem;
-        border-radius: 24px;
-        border: none;
-        background: var(--cream);
-        box-shadow: inset -3px -3px 8px rgba(255,255,255,0.8), inset 3px 3px 8px rgba(174,174,192,0.3);
-        font-size: 0.95rem;
-        font-family: 'Nunito', sans-serif;
-        color: var(--text-dark);
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus,
-    .form-select:focus {
-        box-shadow: inset -4px -4px 10px rgba(255,255,255,0.9), inset 4px 4px 10px rgba(174,174,192,0.4);
-        outline: none;
-    }
-    
-    textarea.form-control {
-        min-height: 120px;
-        resize: vertical;
-    }
-    
-    .form-text {
-        color: var(--text-muted);
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: block;
-    }
-    
-    .btn-pill {
-        padding: 1rem 2rem;
-        border-radius: 30px;
-        border: none;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        box-shadow: var(--shadow-light), var(--shadow-dark);
-        font-family: 'Nunito', sans-serif;
-    }
-    
-    .btn-pill-primary {
-        background: linear-gradient(135deg, var(--mint), var(--mint-light));
-        color: white;
-    }
-    
-    .btn-pill-primary:hover {
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: -8px -8px 18px rgba(255,255,255,0.95), 8px 8px 18px rgba(174,174,192,0.5);
-    }
-    
-    .btn-pill-secondary {
-        background: var(--cream);
-        color: var(--text-dark);
-        border: 2px solid var(--lavender-light);
-    }
-    
-    .btn-pill-secondary:hover {
-        background: var(--lavender-lighter);
-        color: var(--text-dark);
-        transform: translateY(-3px);
-        box-shadow: -8px -8px 18px rgba(255,255,255,0.95), 8px 8px 18px rgba(174,174,192,0.5);
-    }
-    
-    .accessibility-tips {
-        background: linear-gradient(135deg, var(--pale-yellow) 0%, #fff9d9 100%);
-        border-radius: 28px;
-        padding: 2rem;
-        box-shadow: var(--shadow-light), var(--shadow-dark);
-        margin-top: 2rem;
-    }
-    
-    .accessibility-tips h5 {
-        color: var(--text-dark);
-        font-weight: 800;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .accessibility-tips ul {
-        margin-bottom: 0;
-        padding-left: 1.5rem;
-    }
-    
-    .accessibility-tips li {
-        color: var(--text-dark);
-        margin-bottom: 0.75rem;
-        line-height: 1.6;
-    }
-    
-    .accessibility-tips li strong {
-        color: var(--text-dark);
-        font-weight: 700;
-    }
-    
-    .text-danger {
-        color: var(--peach);
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        font-weight: 600;
-    }
-    
-    .mb-3 {
-        margin-bottom: 1.75rem;
-    }
-</style>
 
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<div class="page-header">
-    <h1><i class="bi bi-journal-plus"></i> {% if form.instance.pk %}Edit Lesson{% else %}Create Lesson{% endif %}</h1>
-    {% if course %}
-    <p class="lead"><i class="bi bi-book"></i> Course: <strong>{{ course.name }}</strong></p>
-    {% endif %}
+<div class="row dashboard-header">
+    <div class="col-12">
+        <h1 class="mb-3">
+            <i class="bi bi-journal-plus"></i> {% if form.instance.pk %}Edit Lesson{% else %}Create Lesson{% endif %}
+        </h1>
+        {% if course %}
+        <p class="lead"><i class="bi bi-book"></i> Course: <strong>{{ course.name }}</strong></p>
+        {% endif %}
+    </div>
 </div>
 
-<div class="form-card">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="{{ form.course.id_for_label }}" class="form-label">
-                <i class="bi bi-book"></i> Course
-            </label>
-            {{ form.course }}
-            {% if form.course.errors %}
-                <div class="text-danger">{{ form.course.errors }}</div>
-            {% endif %}
-        </div>
+<div class="card section-card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-journal-text"></i> Lesson Details
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="{{ form.course.id_for_label }}" class="form-label">
+                    <i class="bi bi-book"></i> Course
+                </label>
+                {{ form.course }}
+                {% if form.course.errors %}
+                    <div class="text-danger">{{ form.course.errors }}</div>
+                {% endif %}
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.title.id_for_label }}" class="form-label">
-                <i class="bi bi-type"></i> Title *
-            </label>
-            <input type="text" name="title" class="form-control" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" required>
-            {% if form.title.errors %}
-                <div class="text-danger">{{ form.title.errors }}</div>
-            {% endif %}
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    <i class="bi bi-type"></i> Title *
+                </label>
+                <input type="text" name="title" class="form-control" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" required>
+                {% if form.title.errors %}
+                    <div class="text-danger">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.description.id_for_label }}" class="form-label">
-                <i class="bi bi-text-paragraph"></i> Description
-            </label>
-            <textarea name="description" class="form-control" id="{{ form.description.id_for_label }}" rows="3">{{ form.description.value|default:'' }}</textarea>
-            {% if form.description.errors %}
-                <div class="text-danger">{{ form.description.errors }}</div>
-            {% endif %}
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">
+                    <i class="bi bi-text-paragraph"></i> Description
+                </label>
+                <textarea name="description" class="form-control" id="{{ form.description.id_for_label }}" rows="3">{{ form.description.value|default:'' }}</textarea>
+                {% if form.description.errors %}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.content_type.id_for_label }}" class="form-label">
-                <i class="bi bi-folder"></i> Content Type *
-            </label>
-            <select name="content_type" class="form-select" id="{{ form.content_type.id_for_label }}" required>
-                <option value="">---------</option>
-                <option value="text" {% if form.content_type.value == 'text' %}selected{% endif %}>Text</option>
-                <option value="pdf" {% if form.content_type.value == 'pdf' %}selected{% endif %}>PDF</option>
-                <option value="video" {% if form.content_type.value == 'video' %}selected{% endif %}>Video</option>
-                <option value="audio" {% if form.content_type.value == 'audio' %}selected{% endif %}>Audio</option>
-                <option value="image" {% if form.content_type.value == 'image' %}selected{% endif %}>Image</option>
-            </select>
-            {% if form.content_type.errors %}
-                <div class="text-danger">{{ form.content_type.errors }}</div>
-            {% endif %}
-            <small class="form-text">Select the type of content for this lesson</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.content_type.id_for_label }}" class="form-label">
+                    <i class="bi bi-folder"></i> Content Type *
+                </label>
+                <select name="content_type" class="form-select" id="{{ form.content_type.id_for_label }}" required>
+                    <option value="">---------</option>
+                    <option value="text" {% if form.content_type.value == 'text' %}selected{% endif %}>Text</option>
+                    <option value="pdf" {% if form.content_type.value == 'pdf' %}selected{% endif %}>PDF</option>
+                    <option value="video" {% if form.content_type.value == 'video' %}selected{% endif %}>Video</option>
+                    <option value="audio" {% if form.content_type.value == 'audio' %}selected{% endif %}>Audio</option>
+                    <option value="image" {% if form.content_type.value == 'image' %}selected{% endif %}>Image</option>
+                </select>
+                {% if form.content_type.errors %}
+                    <div class="text-danger">{{ form.content_type.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Select the type of content for this lesson</small>
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.text_content.id_for_label }}" class="form-label">
-                <i class="bi bi-file-text"></i> Text Content
-            </label>
-            <textarea name="text_content" class="form-control" id="{{ form.text_content.id_for_label }}" rows="5">{{ form.text_content.value|default:'' }}</textarea>
-            {% if form.text_content.errors %}
-                <div class="text-danger">{{ form.text_content.errors }}</div>
-            {% endif %}
-            <small class="form-text">For text-based lessons, enter the main content here</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.text_content.id_for_label }}" class="form-label">
+                    <i class="bi bi-file-text"></i> Text Content
+                </label>
+                <textarea name="text_content" class="form-control" id="{{ form.text_content.id_for_label }}" rows="5">{{ form.text_content.value|default:'' }}</textarea>
+                {% if form.text_content.errors %}
+                    <div class="text-danger">{{ form.text_content.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">For text-based lessons, enter the main content here</small>
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.file.id_for_label }}" class="form-label">
-                <i class="bi bi-upload"></i> File Upload
-            </label>
-            <input type="file" name="file" class="form-control" id="{{ form.file.id_for_label }}">
-            {% if form.file.errors %}
-                <div class="text-danger">{{ form.file.errors }}</div>
-            {% endif %}
-            <small class="form-text">Upload PDF, image, audio, or video files</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.video_url.id_for_label }}" class="form-label">
+                    <i class="bi bi-youtube"></i> YouTube Video URL
+                </label>
+                <input type="url" name="video_url" class="form-control" id="{{ form.video_url.id_for_label }}" value="{{ form.video_url.value|default:'' }}" placeholder="https://www.youtube.com/watch?v=...">
+                {% if form.video_url.errors %}
+                    <div class="text-danger">{{ form.video_url.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Paste your YouTube video link here (works with youtube.com or youtu.be links)</small>
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.alt_text.id_for_label }}" class="form-label">
-                <i class="bi bi-eye-slash"></i> Alternative Text (Alt Text)
-            </label>
-            <textarea name="alt_text" class="form-control" id="{{ form.alt_text.id_for_label }}" rows="2">{{ form.alt_text.value|default:'' }}</textarea>
-            {% if form.alt_text.errors %}
-                <div class="text-danger">{{ form.alt_text.errors }}</div>
-            {% endif %}
-            <small class="form-text">Describe images/videos for visually impaired students</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.file.id_for_label }}" class="form-label">
+                    <i class="bi bi-upload"></i> File Upload
+                </label>
+                <input type="file" name="file" class="form-control" id="{{ form.file.id_for_label }}">
+                {% if form.file.errors %}
+                    <div class="text-danger">{{ form.file.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Upload PDF, image, audio, or video files (alternative to YouTube link)</small>
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.transcript.id_for_label }}" class="form-label">
-                <i class="bi bi-card-text"></i> Transcript
-            </label>
-            <textarea name="transcript" class="form-control" id="{{ form.transcript.id_for_label }}" rows="4">{{ form.transcript.value|default:'' }}</textarea>
-            {% if form.transcript.errors %}
-                <div class="text-danger">{{ form.transcript.errors }}</div>
-            {% endif %}
-            <small class="form-text">Provide text transcripts for audio/video content</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.alt_text.id_for_label }}" class="form-label">
+                    <i class="bi bi-eye-slash"></i> Alternative Text (Alt Text)
+                </label>
+                <textarea name="alt_text" class="form-control" id="{{ form.alt_text.id_for_label }}" rows="2">{{ form.alt_text.value|default:'' }}</textarea>
+                {% if form.alt_text.errors %}
+                    <div class="text-danger">{{ form.alt_text.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Describe images/videos for visually impaired students</small>
+            </div>
 
-        <div class="mb-3">
-            <label for="{{ form.order.id_for_label }}" class="form-label">
-                <i class="bi bi-list-ol"></i> Order
-            </label>
-            <input type="number" name="order" class="form-control" id="{{ form.order.id_for_label }}" value="{{ form.order.value|default:'0' }}">
-            {% if form.order.errors %}
-                <div class="text-danger">{{ form.order.errors }}</div>
-            {% endif %}
-            <small class="form-text">Set the order of this lesson in the course (0 = first)</small>
-        </div>
+            <div class="mb-3">
+                <label for="{{ form.transcript.id_for_label }}" class="form-label">
+                    <i class="bi bi-card-text"></i> Transcript
+                </label>
+                <textarea name="transcript" class="form-control" id="{{ form.transcript.id_for_label }}" rows="4">{{ form.transcript.value|default:'' }}</textarea>
+                {% if form.transcript.errors %}
+                    <div class="text-danger">{{ form.transcript.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Provide text transcripts for audio/video content</small>
+            </div>
 
-        <div class="mt-4 d-flex gap-3 flex-wrap">
-            <button type="submit" class="btn-pill btn-pill-primary">
-                <i class="bi bi-check-circle"></i> Save Lesson
-            </button>
-            <a href="{% if course %}{% url 'course_detail' course.id %}{% else %}{% url 'course_list' %}{% endif %}" class="btn-pill btn-pill-secondary">
-                <i class="bi bi-x-circle"></i> Cancel
-            </a>
-        </div>
-    </form>
+            <div class="mb-3">
+                <label for="{{ form.order.id_for_label }}" class="form-label">
+                    <i class="bi bi-list-ol"></i> Order
+                </label>
+                <input type="number" name="order" class="form-control" id="{{ form.order.id_for_label }}" value="{{ form.order.value|default:'0' }}">
+                {% if form.order.errors %}
+                    <div class="text-danger">{{ form.order.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Set the order of this lesson in the course (0 = first)</small>
+            </div>
+
+            <div class="mt-4 d-flex gap-3 flex-wrap">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Save Lesson
+                </button>
+                <a href="{% if course %}{% url 'course_detail' course.id %}{% else %}{% url 'course_list' %}{% endif %}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="accessibility-tips">
-    <h5><i class="bi bi-info-circle"></i> Accessibility Tips:</h5>
-    <ul>
-        <li><strong>Alt Text:</strong> Describe images clearly for screen readers</li>
-        <li><strong>Transcripts:</strong> Provide full text versions of audio/video content</li>
-        <li><strong>Content Type:</strong> Choose the appropriate type for better content organization</li>
-        <li><strong>File Formats:</strong> Use accessible formats (PDF/A, captioned videos)</li>
-    </ul>
+<div class="card section-card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-info-circle"></i> Accessibility Tips
+        </h5>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li><strong>Alt Text:</strong> Describe images clearly for screen readers</li>
+            <li><strong>Transcripts:</strong> Provide full text versions of audio/video content</li>
+            <li><strong>Content Type:</strong> Choose the appropriate type for better content organization</li>
+            <li><strong>File Formats:</strong> Use accessible formats (PDF/A, captioned videos)</li>
+        </ul>
+    </div>
 </div>
 {% endblock %}
