@@ -83,7 +83,9 @@ def dashboard_view(request):
     user_role = profile.role
     
     if user_role == 'admin':
-        return redirect('dashboard_admin')
+        # Redirect admins directly to Django's built-in admin panel
+        messages.info(request, 'Welcome Admin! Redirecting to the administration panel.')
+        return redirect('/admin/')
     elif user_role == 'teacher':
         return redirect('dashboard_teacher')
     elif user_role == 'student':
@@ -93,24 +95,6 @@ def dashboard_view(request):
     else:
         messages.error(request, 'Invalid user role.')
         return redirect('login')
-
-
-@login_required
-def dashboard_admin(request):
-    """Admin Dashboard - Redirect to Django Admin Panel"""
-    # Ensure profile exists
-    profile, created = Profile.objects.get_or_create(
-        user=request.user,
-        defaults={'role': 'admin' if request.user.is_superuser else 'student'}
-    )
-    
-    if profile.role != 'admin':
-        messages.error(request, 'Access denied. Admin only.')
-        return redirect('dashboard')
-    
-    # Redirect admins to the built-in Django admin panel
-    messages.info(request, 'Welcome Admin! Redirecting to the administration panel.')
-    return redirect('/admin/')
 
 
 @login_required
@@ -165,6 +149,11 @@ def dashboard_teacher(request):
     # Calculate attendance percentage
     attendance_percentage = round((present_count / total_attendance_records * 100), 1) if total_attendance_records > 0 else 0
     
+    # Calculate individual percentages for progress bar
+    present_percentage = round((present_count / total_attendance_records * 100), 1) if total_attendance_records > 0 else 0
+    absent_percentage = round((absent_count / total_attendance_records * 100), 1) if total_attendance_records > 0 else 0
+    late_percentage = round((late_count / total_attendance_records * 100), 1) if total_attendance_records > 0 else 0
+    
     context = {
         'courses': courses,
         'total_lessons': total_lessons,
@@ -182,6 +171,9 @@ def dashboard_teacher(request):
         'present_count': present_count,
         'absent_count': absent_count,
         'late_count': late_count,
+        'present_percentage': present_percentage,
+        'absent_percentage': absent_percentage,
+        'late_percentage': late_percentage,
         'total_attendance_records': total_attendance_records,
     }
     return render(request, 'dashboard_teacher.html', context)

@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=15.0">
+    <link rel="stylesheet" href="{% static 'css/dashboard_beautiful.css' %}?v=15.0">
+    <link rel="stylesheet" href="{% static 'css/beautiful_override.css' %}?v=15.0">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -24,14 +26,14 @@
     <nav class="navbar navbar-expand-lg navbar-main">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'dashboard' %}">
-                <i class="bi bi-mortarboard-fill"></i> EduManage Pro
+                <i class="bi bi-mortarboard-fill"></i> Education Ecosystem
             </a>
             
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-2"></i> {{ user.username }}
-                        <span class="badge bg-primary ms-2">{{ user.profile.get_role_display }}</span>
+                        <span class="badge badge-role ms-2">{{ user.profile.get_role_display }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="{% url 'profile_settings' %}">
@@ -297,9 +299,6 @@
                 }
                 localStorage.setItem('readOnHover', 'true');
                 activateHoverReading();
-                
-                // Show notification
-                showNotification('✓ Hover over any text to hear it read aloud!', 'success');
             } else {
                 if (btnText) btnText.textContent = 'Enable Read on Hover';
                 if (btn) {
@@ -308,8 +307,6 @@
                 }
                 localStorage.setItem('readOnHover', 'false');
                 deactivateHoverReading();
-                
-                showNotification('Read on hover disabled', 'info');
             }
         }
         

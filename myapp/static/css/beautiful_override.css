@@ -1,0 +1,115 @@
+/* 🏢 Enterprise Professional Theme Override - Deep Blue & Neutral Greys */
+
+/* DISABLE ALL ANIMATIONS, TRANSFORMS AND TRANSITIONS */
+* {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+*:hover,
+*:focus,
+*:active {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+:root {
+    --primary: #0056b3;
+    --primary-light: #1a73e8;
+    --primary-dark: #003d82;
+    --bg-lightest: #f8f9fa;
+    --bg-light: #f0f2f5;
+}
+
+/* Override existing styles with professional design */
+body {
+    background: var(--bg-lightest) !important;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif !important;
+}
+
+.navbar-main {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Remove ALL borders */
+* {
+    border-color: transparent !important;
+}
+
+.card {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* EXCEPTION: stat-card uses neumorphic design */
+.card.stat-card {
+    border-radius: 20px !important;
+    box-shadow: -6px -6px 14px rgba(255,255,255,0.9), 6px 6px 14px rgba(174,174,192,0.4) !important;
+    background: #fefdfa !important;
+    padding: 2rem 1.5rem !important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(0, 86, 179, 0.15) !important;
+}
+
+/* EXCEPTION: stat-card hover */
+.card.stat-card:hover {
+    box-shadow: -10px -10px 20px rgba(255,255,255,0.95), 10px 10px 20px rgba(174,174,192,0.5) !important;
+}
+
+.card-header {
+    background: var(--bg-light) !important;
+    color: #212529 !important;
+    border: none !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.btn-primary {
+    background: var(--primary) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 4px rgba(0, 86, 179, 0.2) !important;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark) !important;
+    box-shadow: 0 4px 8px rgba(0, 86, 179, 0.25) !important;
+}
+
+.badge-primary {
+    background: var(--primary) !important;
+    border-radius: 4px !important;
+}
+
+.table thead {
+    background: var(--bg-light) !important;
+    color: #212529 !important;
+}
+
+.table tbody tr:hover {
+    background: var(--bg-lightest) !important;
+}
+
+.alert-info {
+    background: rgba(0, 86, 179, 0.1) !important;
+    border: none !important;
+    border-left: 4px solid var(--primary) !important;
+    border-radius: 6px !important;
+}
+
+/* EXCEPTION: Preserve stat-card neumorphic design */
+.stat-card {
+    border-radius: 20px !important;
+    box-shadow: -6px -6px 14px rgba(255,255,255,0.9), 6px 6px 14px rgba(174,174,192,0.4) !important;
+    background: #fefdfa !important;
+}
+
+.stat-card:hover {
+    box-shadow: -10px -10px 20px rgba(255,255,255,0.95), 10px 10px 20px rgba(174,174,192,0.5) !important;
+}

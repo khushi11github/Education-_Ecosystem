@@ -18,8 +18,8 @@ class TextToSpeech {
         // Check if user has visual impairment
         this.checkUserSettings();
         
-        // Initialize controls
-        this.initControls();
+        // Initialize controls - REMOVED: Control panel not needed as we have accessibility menu
+        // this.initControls();
     }
     
     loadVoices() {
@@ -64,10 +64,11 @@ class TextToSpeech {
     }
     
     showTTSControls() {
-        const controls = document.getElementById('tts-controls');
-        if (controls) {
-            controls.style.display = 'block';
-        }
+        // REMOVED: Control panel not needed as we have accessibility menu
+        // const controls = document.getElementById('tts-controls');
+        // if (controls) {
+        //     controls.style.display = 'block';
+        // }
     }
     
     attachEventListeners() {

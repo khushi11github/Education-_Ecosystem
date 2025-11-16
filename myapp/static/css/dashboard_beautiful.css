@@ -1,0 +1,603 @@
+/* ============================================================================
+   MODERN CUTE TEACHER DASHBOARD - NEUMORPHIC SOFT PASTEL AESTHETIC
+   Same style as Courses page with soft shadows and rounded design
+   ============================================================================ */
+
+/* CSS Custom Properties - Soft Pastel Color Palette */
+:root {
+    /* Soft Pastel Backgrounds */
+    --cream: #fefdfa;
+    --color-bg-page: #fefdfa;
+    --color-bg-card: #fefdfa;
+    
+    /* Accent Colors - Soft Pastels */
+    --lavender: #b19cd9;
+    --lavender-light: #d4c5f9;
+    --lavender-lighter: #e8e0ff;
+    --mint: #a7e9af;
+    --mint-light: #d4f4dd;
+    --peach: #ffb3a7;
+    --peach-light: #ffd9d4;
+    --pale-yellow: #fff4b8;
+    --soft-pink: #ffc8dd;
+    
+    --color-accent-lilac: #b19cd9;
+    --color-accent-sage: #a7e9af;
+    --color-accent-peach: #ffb3a7;
+    --color-accent-yellow: #fff4b8;
+    
+    /* Text Colors - Soft and Warm */
+    --text-dark: #3e3e4a;
+    --text-muted: #8a8a9e;
+    --color-text-body: #3e3e4a;
+    --color-text-muted: #8a8a9e;
+    --color-text-heading: #3e3e4a;
+    
+    /* Neumorphic Shadows */
+    --shadow-light: -6px -6px 14px rgba(255,255,255,0.9);
+    --shadow-dark: 6px 6px 14px rgba(174,174,192,0.4);
+    --shadow-soft: -6px -6px 14px rgba(255,255,255,0.9), 6px 6px 14px rgba(174,174,192,0.4);
+    --shadow-hover: -10px -10px 20px rgba(255,255,255,0.95), 10px 10px 20px rgba(174,174,192,0.5);
+    
+    /* Border Radius - High Roundness */
+    --radius-card: 32px;
+    --radius-button: 30px;
+    --radius-small: 20px;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Typography */
+    --font-system: 'Nunito', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+}
+
+/* ============================================================================
+   BASE & LAYOUT
+   ============================================================================ */
+
+body {
+    font-family: var(--font-system);
+    background: var(--cream) !important;
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   HEADER SECTION - Same as Courses Page
+   ============================================================================ */
+
+.dashboard-header {
+    background: linear-gradient(135deg, var(--lavender-light) 0%, var(--lavender-lighter) 100%);
+    padding: 3rem 2rem;
+    border-radius: 40px;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+}
+
+.dashboard-header h1 {
+    color: var(--text-dark);
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-header p,
+.dashboard-header .lead,
+.dashboard-header p.lead {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+}
+
+.icon-float {
+    display: inline-block;
+}
+
+/* ============================================================================
+   KEY METRIC CARDS - NEUMORPHIC STYLE (Same as Courses)
+   ============================================================================ */
+
+.row.g-3.mb-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* ============================================================================
+   CUTE METRIC BOXES
+   ============================================================================ */
+
+.metric-box {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    min-height: 220px;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+}
+
+.metric-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.metric-box-courses .metric-icon {
+    background: linear-gradient(135deg, #ffb3a7 0%, #ffd9d4 100%);
+    color: white;
+}
+
+.metric-box-students .metric-icon {
+    background: linear-gradient(135deg, #b19cd9 0%, #d4c5f9 100%);
+    color: white;
+}
+
+.metric-box-assignments .metric-icon {
+    background: linear-gradient(135deg, #a7e9af 0%, #d4f4dd 100%);
+    color: white;
+}
+
+.metric-box-pending .metric-icon {
+    background: linear-gradient(135deg, #fff4b8 0%, #fffadb 100%);
+    color: #8a8a9e;
+}
+
+.metric-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.metric-number {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1;
+}
+
+.metric-box-courses .metric-number {
+    color: var(--peach);
+}
+
+.metric-box-students .metric-number {
+    color: var(--lavender);
+}
+
+.metric-box-assignments .metric-number {
+    color: var(--mint);
+}
+
+.metric-box-pending .metric-number {
+    color: #E6B800;
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ============================================================================
+   ATTENDANCE OVERVIEW SECTION - Soft Pill Chips & Rounded Design
+   ============================================================================ */
+
+.section-card {
+    background: var(--cream);
+    border: none;
+    border-radius: 32px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    padding: 2rem;
+}
+
+.section-card .card-header {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid var(--lavender-lighter) !important;
+    padding: 0 0 1rem 0 !important;
+    margin-bottom: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.section-card .card-header h5 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark) !important;
+    letter-spacing: -0.2px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Attendance Metrics - Soft Pill Chips */
+.section-card .row.text-center.mb-3 {
+    display: flex;
+    justify-content: space-around;
+    gap: var(--spacing-md);
+    padding: 0;
+}
+
+.section-card .row.text-center.mb-3 > div {
+    flex: 1;
+    padding: var(--spacing-lg) var(--spacing-md);
+    border-radius: 24px;
+    border: none;
+}
+
+/* Soft Pill Backgrounds */
+.section-card .row.text-center.mb-3 > div:nth-child(1) {
+    background: rgba(168, 208, 179, 0.2);
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(2) {
+    background: rgba(255, 184, 167, 0.2);
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(3) {
+    background: rgba(255, 211, 61, 0.2);
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(4) {
+    background: rgba(184, 184, 209, 0.2);
+}
+
+.section-card .row.text-center.mb-3 h3 {
+    font-size: 2.25rem;
+    font-weight: var(--font-weight-extrabold);
+    margin-bottom: 0.25rem;
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(1) h3 {
+    color: var(--color-accent-sage);
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(2) h3 {
+    color: var(--color-accent-peach);
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(3) h3 {
+    color: #FFB638;
+}
+
+.section-card .row.text-center.mb-3 > div:nth-child(4) h3 {
+    color: var(--color-accent-lilac);
+}
+
+.section-card .row.text-center.mb-3 small {
+    font-size: 0.8125rem;
+    color: var(--color-text-body);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Progress Bar - Thick & Rounded */
+.attendance-progress {
+    height: 16px;
+    border-radius: 16px;
+    background: var(--color-bg-page);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 16px;
+    background: var(--color-accent-sage);
+}
+
+.progress-bar.bg-success {
+    background: var(--color-accent-sage) !important;
+}
+
+/* Buttons - Soft Rounded Pill Style */
+.section-card .d-flex.gap-2 {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.section-card .btn,
+.btn-primary,
+.btn-outline-primary {
+    border-radius: 24px;
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-weight: var(--font-weight-semibold);
+    font-size: 0.875rem;
+    border: 2px solid transparent;
+}
+
+.btn-primary,
+.section-card .btn-primary {
+    background: var(--color-accent-lilac) !important;
+    color: white !important;
+    border-color: var(--color-accent-lilac) !important;
+}
+
+.btn-primary:hover,
+.section-card .btn-primary:hover {
+    background: #9E9EB8 !important;
+    border-color: #9E9EB8 !important;
+}
+
+.btn-outline-primary,
+.section-card .btn-outline-primary {
+    background: white !important;
+    color: var(--color-accent-lilac) !important;
+    border: 2px solid var(--color-accent-lilac) !important;
+}
+
+.btn-outline-primary:hover,
+.section-card .btn-outline-primary:hover {
+    background: var(--color-accent-lilac) !important;
+    color: white !important;
+}
+
+/* ============================================================================
+   TABLES & OTHER SECTIONS - Soft Rounded Planner Style
+   ============================================================================ */
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: rgba(184, 184, 209, 0.15);
+    border-bottom: 2px solid rgba(184, 184, 209, 0.25);
+}
+
+.table thead th {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-text-body);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(184, 184, 209, 0.08);
+}
+
+.table tbody td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.9375rem;
+    color: var(--color-text-body);
+    vertical-align: middle;
+}
+
+/* ============================================================================
+   BADGES - Soft Pastel Pill Style
+   ============================================================================ */
+
+.badge {
+    font-weight: var(--font-weight-semibold);
+    padding: 0.45em 1em;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+}
+
+.badge.bg-success {
+    background-color: var(--color-accent-sage) !important;
+    color: white !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--color-accent-peach) !important;
+    color: white !important;
+}
+
+.badge.bg-warning {
+    background-color: #FFD93D !important;
+    color: var(--color-text-body) !important;
+}
+
+.badge.bg-primary,
+.badge.bg-info,
+.badge.bg-secondary {
+    background-color: var(--color-accent-lilac) !important;
+    color: white !important;
+}
+
+/* ============================================================================
+   BUTTON GROUPS - Soft Rounded Pill Buttons
+   ============================================================================ */
+
+.btn-group {
+    gap: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.btn-group .btn {
+    background: white;
+    border: 2px solid var(--color-accent-lilac);
+    color: var(--color-accent-lilac);
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 24px;
+    margin-right: 0;
+    box-shadow: var(--shadow-soft);
+}
+
+/* Quick Action Buttons - Individual White Pills with Delicate Colored Borders */
+.card-body .row.g-3 .btn {
+    background: white !important;
+    border: 2px solid var(--color-accent-lilac) !important;
+    color: var(--color-accent-lilac) !important;
+    border-radius: 24px !important;
+    padding: 1.5rem 1rem !important;
+    font-weight: 600 !important;
+    box-shadow: var(--shadow-soft) !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+/* Color each quick action button differently */
+.card-body .row.g-3 .col-md-3:nth-child(1) .btn {
+    border-color: var(--color-accent-peach) !important;
+    color: var(--color-accent-peach) !important;
+}
+
+.card-body .row.g-3 .col-md-3:nth-child(2) .btn {
+    border-color: var(--color-accent-sage) !important;
+    color: var(--color-accent-sage) !important;
+}
+
+.card-body .row.g-3 .col-md-3:nth-child(3) .btn {
+    border-color: var(--color-accent-lilac) !important;
+    color: var(--color-accent-lilac) !important;
+}
+
+.card-body .row.g-3 .col-md-3:nth-child(4) .btn {
+    border-color: #FFD93D !important;
+    color: #E6B800 !important;
+}
+
+
+
+/* Icon styling within quick action buttons */
+.card-body .row.g-3 .btn i {
+    font-size: 1.75rem !important;
+}
+
+.card-body .row.g-3 .btn small {
+    font-size: 0.7rem !important;
+    opacity: 0.75 !important;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 1200px) {
+    .row.g-3.mb-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .row.g-3.mb-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .section-card .row.text-center.mb-3 {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        min-height: 200px;
+    }
+    
+    .stat-card h2 {
+        font-size: 2.5rem;
+    }
+}
+
+/* ============================================================================
+   UTILITY OVERRIDES - Enforce Soft Pastel Aesthetic
+   ============================================================================ */
+
+/* Hide decorative elements */
+.bg-decoration,
+.cartoon-header {
+    display: none !important;
+}
+
+/* Override any remaining inline styles */
+[style*="background: linear-gradient"],
+[style*="background: #14b8a6"],
+[style*="background: rgb"] {
+    background: var(--color-accent-lilac) !important;
+}
+
+/* Ensure all cards have proper styling */
+.card {
+    border-radius: 28px;
+    border: none;
+    box-shadow: var(--shadow-soft);
+    background: var(--color-bg-card);
+}
+
+/* Alert boxes - soft rounded */
+.alert {
+    border-radius: 20px;
+    border: none;
+}
+
+/* List groups - soft styling */
+.list-group-item {
+    border-radius: 16px;
+    border: none;
+    margin-bottom: var(--spacing-xs);
+    background: var(--color-bg-page);
+}
+
+/* Modal headers */
+.modal-header {
+    background: var(--color-accent-lilac);
+    color: white;
+    border-radius: 28px 28px 0 0;
+}
+
+/* Container spacing */
+.container-fluid {
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-xl);
+}

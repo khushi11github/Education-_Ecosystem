@@ -1,123 +1,69 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Teacher Dashboard - Education Ecosystem{% endblock %}
 
-{% block content %}
-<style>
-    .stat-card {
-        transition: all 0.3s ease;
-        border: none;
-        border-radius: 15px;
-    }
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    .section-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        margin-bottom: 1.5rem;
-    }
-    .badge-custom {
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-    }
-    .attendance-progress {
-        height: 8px;
-        border-radius: 10px;
-    }
-</style>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_beautiful.css' %}">
+{% endblock %}
 
-<div class="row">
+{% block content %}
+
+<!-- Teacher Dashboard Content -->
+
+
+<div class="row dashboard-header">
     <div class="col-12">
-        <h1 class="mb-4">
-            <i class="bi bi-person-badge"></i> Teacher Dashboard
+        <h1 class="mb-3">
+            <i class="bi bi-person-badge icon-float"></i> Teacher Dashboard
         </h1>
         <p class="lead">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! 👨‍🏫</p>
     </div>
 </div>
 
-<!-- Statistics Cards -->
+<!-- Cute Metric Boxes -->
 <div class="row g-3 mb-4">
     <div class="col-md-3 col-sm-6">
-        <div class="card stat-card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50 mb-1">Courses</h6>
-                        <h2 class="mb-0">{{ courses.count }}</h2>
-                        <small>Teaching</small>
-                    </div>
-                    <div class="fs-1 opacity-50">
-                        <i class="bi bi-book"></i>
-                    </div>
-                </div>
+        <div class="metric-box metric-box-courses">
+            <div class="metric-icon">
+                <i class="bi bi-book-fill"></i>
             </div>
-            <div class="card-footer bg-white bg-opacity-10 border-0">
-                <a href="{% url 'course_list' %}" class="text-white text-decoration-none small">
-                    View all <i class="bi bi-arrow-right"></i>
-                </a>
+            <div class="metric-content">
+                <h3 class="metric-number">{{ courses.count }}</h3>
+                <p class="metric-label">Courses</p>
             </div>
         </div>
     </div>
-    
     <div class="col-md-3 col-sm-6">
-        <div class="card stat-card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50 mb-1">Students</h6>
-                        <h2 class="mb-0">{{ total_students }}</h2>
-                        <small>Total Enrolled</small>
-                    </div>
-                    <div class="fs-1 opacity-50">
-                        <i class="bi bi-people"></i>
-                    </div>
-                </div>
+        <div class="metric-box metric-box-students">
+            <div class="metric-icon">
+                <i class="bi bi-people-fill"></i>
             </div>
-            <div class="card-footer bg-white bg-opacity-10 border-0">
-                <small>Across all courses</small>
+            <div class="metric-content">
+                <h3 class="metric-number">{{ total_students }}</h3>
+                <p class="metric-label">Students</p>
             </div>
         </div>
     </div>
-    
     <div class="col-md-3 col-sm-6">
-        <div class="card stat-card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50 mb-1">Assignments</h6>
-                        <h2 class="mb-0">{{ total_assignments }}</h2>
-                        <small>Created</small>
-                    </div>
-                    <div class="fs-1 opacity-50">
-                        <i class="bi bi-clipboard-check"></i>
-                    </div>
-                </div>
+        <div class="metric-box metric-box-assignments">
+            <div class="metric-icon">
+                <i class="bi bi-clipboard-check-fill"></i>
             </div>
-            <div class="card-footer bg-white bg-opacity-10 border-0">
-                <small>{{ total_lessons }} lessons</small>
+            <div class="metric-content">
+                <h3 class="metric-number">{{ total_assignments }}</h3>
+                <p class="metric-label">Assignments</p>
             </div>
         </div>
     </div>
-    
     <div class="col-md-3 col-sm-6">
-        <div class="card stat-card bg-warning text-dark">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-dark-50 mb-1">To Grade</h6>
-                        <h2 class="mb-0">{{ pending_count }}</h2>
-                        <small>Submissions</small>
-                    </div>
-                    <div class="fs-1 opacity-50">
-                        <i class="bi bi-hourglass-split"></i>
-                    </div>
-                </div>
+        <div class="metric-box metric-box-pending">
+            <div class="metric-icon">
+                <i class="bi bi-hourglass-split"></i>
             </div>
-            <div class="card-footer bg-white bg-opacity-25 border-0">
-                <small>{{ graded_count }} graded</small>
+            <div class="metric-content">
+                <h3 class="metric-number">{{ pending_count }}</h3>
+                <p class="metric-label">To Grade</p>
             </div>
         </div>
     </div>
@@ -127,7 +73,7 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card section-card">
-            <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%); color: white;">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-calendar-check"></i> Attendance Overview
                 </h5>
@@ -155,10 +101,10 @@
                     <div class="progress-bar bg-success" role="progressbar" style="width: {{ attendance_percentage }}%"></div>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{% url 'attendance_mark' %}" class="btn btn-success btn-sm">
+                    <a href="{% url 'attendance_mark' %}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-circle"></i> Mark Attendance
                     </a>
-                    <a href="{% url 'attendance_list' %}" class="btn btn-outline-primary btn-sm">
+                    <a href="{% url 'attendance_list' %}" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-list"></i> View All Records
                     </a>
                 </div>
@@ -169,7 +115,7 @@
 
 <!-- My Courses Section -->
 <div class="card section-card mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header">
         <h5 class="mb-0">
             <i class="bi bi-book"></i> My Courses ({{ courses.count }})
         </h5>
@@ -198,16 +144,16 @@
                         <td><span class="badge bg-warning text-dark">{{ course.assignments.count }}</span></td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <a href="{% url 'course_detail' course.id %}" class="btn btn-info" title="View">
+                                <a href="{% url 'course_detail' course.id %}" class="btn btn-primary" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="{% url 'course_edit' course.id %}" class="btn btn-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'lesson_create' course.id %}" class="btn btn-success" title="Add Lesson">
+                                <a href="{% url 'lesson_create' course.id %}" class="btn btn-primary" title="Add Lesson">
                                     <i class="bi bi-file-plus"></i>
                                 </a>
-                                <a href="{% url 'assignment_create' course.id %}" class="btn btn-warning" title="Add Assignment">
+                                <a href="{% url 'assignment_create' course.id %}" class="btn btn-primary" title="Add Assignment">
                                     <i class="bi bi-clipboard-plus"></i>
                                 </a>
                             </div>
@@ -231,11 +177,11 @@
     <!-- Submissions to Grade -->
     <div class="col-lg-8">
         <div class="card section-card h-100">
-            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+            <div class="card-header text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="bi bi-hourglass-split"></i> Submissions to Grade
                 </h5>
-                <span class="badge bg-dark">{{ pending_count }}</span>
+                <span class="badge bg-white text-dark">{{ pending_count }}</span>
             </div>
             <div class="card-body">
                 {% if pending_submissions %}
@@ -265,7 +211,7 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <a href="{% url 'submission_grade' submission.id %}" class="btn btn-sm btn-success">
+                                    <a href="{% url 'submission_grade' submission.id %}" class="btn btn-sm text-white">
                                         <i class="bi bi-pencil-square"></i> Grade
                                     </a>
                                 </td>
@@ -281,7 +227,7 @@
                 {% endif %}
                 {% else %}
                 <div class="text-center py-4">
-                    <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                    <i class="bi bi-check-circle text-success"></i>
                     <p class="text-muted mt-2 mb-0">No submissions to grade! All caught up.</p>
                 </div>
                 {% endif %}
@@ -292,7 +238,7 @@
     <!-- Active Announcements -->
     <div class="col-lg-4">
         <div class="card section-card h-100">
-            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-megaphone"></i> My Announcements
                 </h5>
@@ -321,13 +267,13 @@
                     <a href="{% url 'announcement_create' %}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-circle"></i> Create Announcement
                     </a>
-                    <a href="{% url 'announcement_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{% url 'announcement_list' %}" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-list"></i> View All
                     </a>
                 </div>
                 {% else %}
                 <div class="text-center py-3">
-                    <i class="bi bi-megaphone-fill text-muted" style="font-size: 2rem;"></i>
+                    <i class="bi bi-megaphone-fill text-muted"></i>
                     <p class="text-muted mt-2 mb-3">No active announcements</p>
                     <a href="{% url 'announcement_create' %}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-circle"></i> Create First Announcement
@@ -344,7 +290,7 @@
     <!-- Recent Attendance -->
     <div class="col-lg-6">
         <div class="card section-card">
-            <div class="card-header bg-success text-white">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-calendar-check"></i> Recent Attendance (Last 7 Days)
                 </h5>
@@ -391,7 +337,7 @@
     <!-- Recent Assignments -->
     <div class="col-lg-6">
         <div class="card section-card">
-            <div class="card-header bg-info text-white">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-clipboard-check"></i> Recent Assignments
                 </h5>
@@ -436,7 +382,7 @@
 
 <!-- Quick Actions -->
 <div class="card section-card">
-    <div class="card-header bg-dark text-white">
+    <div class="card-header">
         <h5 class="mb-0">
             <i class="bi bi-lightning-charge"></i> Quick Actions
         </h5>
@@ -444,22 +390,22 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-3 col-sm-6">
-                <a href="#" onclick="showAssignmentModal(); return false;" class="btn btn-outline-primary w-100">
+                <a href="#" onclick="showAssignmentModal(); return false;" class="btn btn-primary w-100">
                     <i class="bi bi-universal-access"></i><br>Create Assignment<br><small>(Special Needs)</small>
                 </a>
             </div>
             <div class="col-md-3 col-sm-6">
-                <a href="{% url 'attendance_mark' %}" class="btn btn-outline-success w-100">
+                <a href="{% url 'attendance_mark' %}" class="btn btn-primary w-100">
                     <i class="bi bi-calendar-check"></i><br>Mark Attendance
                 </a>
             </div>
             <div class="col-md-3 col-sm-6">
-                <a href="{% url 'announcement_create' %}" class="btn btn-outline-info w-100">
+                <a href="{% url 'announcement_create' %}" class="btn btn-primary w-100">
                     <i class="bi bi-megaphone"></i><br>New Announcement
                 </a>
             </div>
             <div class="col-md-3 col-sm-6">
-                <a href="{% url 'feedback_list' %}" class="btn btn-outline-warning w-100">
+                <a href="{% url 'feedback_list' %}" class="btn btn-primary w-100">
                     <i class="bi bi-chat-dots"></i><br>View Feedback
                 </a>
             </div>
@@ -471,7 +417,7 @@
 <div class="modal fade" id="assignmentModal" tabindex="-1" aria-labelledby="assignmentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header text-white">
                 <h5 class="modal-title" id="assignmentModalLabel">
                     <i class="bi bi-universal-access"></i> Create Assignment for Special Needs Students
                 </h5>
@@ -523,3 +469,6 @@ function showAssignmentModal() {
 </script>
 
 {% endblock %}
+
+
+

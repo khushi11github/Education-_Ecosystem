@@ -1,32 +1,19 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Announcements - Education Ecosystem{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_beautiful.css' %}">
 <style>
-    .announcements-header {
-        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
-    }
-    
     .announcement-card {
-        background: white;
-        border-radius: 15px;
+        background: var(--cream);
+        border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-left: 5px solid #6BCB77;
-        transition: all 0.3s ease;
-        animation: fadeIn 0.5s ease-in;
-    }
-    
-    .announcement-card:hover {
-        transform: translateX(5px);
-        box-shadow: 0 8px 20px rgba(107, 203, 119, 0.3);
+        box-shadow: 8px 8px 16px rgba(185, 185, 185, 0.2), 
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+        border-left: 5px solid var(--lavender);
     }
     
     .announcement-card.inactive {
@@ -42,7 +29,7 @@
         color: #6c757d;
         margin-top: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid #e5dff5;
     }
     
     .meta-item {
@@ -78,33 +65,6 @@
         color: #c92a2a;
     }
     
-    .btn-create {
-        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
-        border: none;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-create:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(107, 203, 119, 0.4);
-        color: white;
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
     .status-badge {
         padding: 0.25rem 0.75rem;
         border-radius: 12px;
@@ -122,18 +82,25 @@
         color: #721c24;
     }
 </style>
+{% endblock %}
 
-<div class="announcements-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1><i class="bi bi-megaphone"></i> Announcements</h1>
-            <p class="mb-0">Important updates and news for the community</p>
+{% block content %}
+
+<div class="row dashboard-header">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-3">
+                    <i class="bi bi-megaphone"></i> Announcements
+                </h1>
+                <p class="lead">Important updates and news for the community</p>
+            </div>
+            {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
+            <a href="{% url 'announcement_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Announcement
+            </a>
+            {% endif %}
         </div>
-        {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
-        <a href="{% url 'announcement_create' %}" class="btn btn-create">
-            <i class="bi bi-plus-circle"></i> Create Announcement
-        </a>
-        {% endif %}
     </div>
 </div>
 
@@ -213,15 +180,17 @@
             </div>
             {% endfor %}
         {% else %}
-            <div class="alert alert-info text-center py-5">
-                <i class="bi bi-info-circle" style="font-size: 3rem;"></i>
-                <h4 class="mt-3">No Announcements Yet</h4>
-                <p class="text-muted">Check back later for important updates and news.</p>
-                {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
-                <a href="{% url 'announcement_create' %}" class="btn btn-create mt-3">
-                    <i class="bi bi-plus-circle"></i> Create First Announcement
-                </a>
-                {% endif %}
+            <div class="card section-card text-center py-5">
+                <div class="card-body">
+                    <i class="bi bi-info-circle" style="font-size: 3rem; color: var(--lavender);"></i>
+                    <h4 class="mt-3">No Announcements Yet</h4>
+                    <p class="text-muted">Check back later for important updates and news.</p>
+                    {% if user.profile.role == 'admin' or user.profile.role == 'teacher' %}
+                    <a href="{% url 'announcement_create' %}" class="btn btn-primary mt-3">
+                        <i class="bi bi-plus-circle"></i> Create First Announcement
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
     </div>

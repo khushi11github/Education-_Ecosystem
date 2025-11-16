@@ -13,12 +13,6 @@ urlpatterns = [
     path('dashboard/student/', views.dashboard_student, name='dashboard_student'),
     path('dashboard/parent/', views.dashboard_parent, name='dashboard_parent'),
     
-    # User Management (Admin)
-    path('users/', views.user_list, name='user_list'),
-    path('users/create/', views.user_create, name='user_create'),
-    path('users/<int:user_id>/edit/', views.user_edit, name='user_edit'),
-    path('users/<int:user_id>/delete/', views.user_delete, name='user_delete'),
-    
     # Courses
     path('courses/', views.course_list, name='course_list'),
     path('courses/create/', views.course_create, name='course_create'),
@@ -38,10 +32,6 @@ urlpatterns = [
     path('assignments/<int:assignment_id>/', views.assignment_detail, name='assignment_detail'),
     path('assignments/<int:assignment_id>/submit/', views.submission_create, name='submission_create'),
     path('submissions/<int:submission_id>/grade/', views.submission_grade, name='submission_grade'),
-    
-    # Compliance Reports (Admin)
-    path('compliance/', views.compliance_list, name='compliance_list'),
-    path('compliance/create/', views.compliance_create, name='compliance_create'),
     
     # Feedback
     path('feedback/', views.feedback_list, name='feedback_list'),

@@ -1,20 +1,28 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Parent Dashboard - Education Ecosystem{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_beautiful.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="row">
+
+<!-- Parent Dashboard Content -->
+
+<div class="row dashboard-header">
     <div class="col-12">
-        <h1 class="mb-4">
+        <h1 class="mb-3">
             <i class="bi bi-person-hearts"></i> Parent Dashboard
         </h1>
-        <p class="lead">Welcome, {{ user.get_full_name|default:user.username }}!</p>
+        <p class="lead">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! 👪</p>
     </div>
 </div>
 
 <!-- Linked Student Info -->
-<div class="card mb-4 border-primary">
-    <div class="card-header bg-primary text-white">
+<div class="card section-card mb-4">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-person"></i> Linked Student</h5>
     </div>
     <div class="card-body">
@@ -34,8 +42,8 @@
 
 {% if linked_student %}
 <!-- Student's Courses -->
-<div class="card mb-4">
-    <div class="card-header bg-success text-white">
+<div class="card section-card mb-4">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-book"></i> Student's Enrolled Courses</h5>
     </div>
     <div class="card-body">
@@ -69,8 +77,8 @@
 </div>
 
 <!-- Student's Academic Performance -->
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
+<div class="card section-card mb-4">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-graph-up"></i> Academic Performance</h5>
     </div>
     <div class="card-body">
@@ -118,8 +126,8 @@
 </div>
 
 <!-- Conduct Reports -->
-<div class="card mb-4">
-    <div class="card-header bg-warning text-dark">
+<div class="card section-card mb-4">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-file-earmark-person"></i> Conduct Reports</h5>
     </div>
     <div class="card-body">
@@ -159,18 +167,20 @@
 </div>
 
 <!-- Feedback Section -->
-<div class="card">
-    <div class="card-header bg-primary text-white">
+<div class="card section-card">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Feedback & Communication</h5>
     </div>
     <div class="card-body">
         <p>Share your concerns or feedback about your child's education</p>
-        <a href="{% url 'feedback_create' %}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Submit Feedback
-        </a>
-        <a href="{% url 'feedback_list' %}" class="btn btn-info">
-            <i class="bi bi-list"></i> View My Feedback
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'feedback_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Submit Feedback
+            </a>
+            <a href="{% url 'feedback_list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-list"></i> View My Feedback
+            </a>
+        </div>
     </div>
 </div>
 {% endif %}

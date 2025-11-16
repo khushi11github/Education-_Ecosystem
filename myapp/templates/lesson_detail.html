@@ -4,95 +4,403 @@
 
 {% block content %}
 <style>
+    :root {
+        --cream: #fefdfa;
+        --lavender: #b19cd9;
+        --lavender-light: #d4c5f9;
+        --lavender-lighter: #e8e0ff;
+        --mint: #a7e9af;
+        --mint-light: #d4f4dd;
+        --peach: #ffb3a7;
+        --pale-yellow: #fff4b8;
+        --text-dark: #3e3e4a;
+        --text-muted: #8a8a9e;
+        --shadow-light: -6px -6px 14px rgba(255,255,255,0.9);
+        --shadow-dark: 6px 6px 14px rgba(174,174,192,0.4);
+    }
+    
+    body {
+        background: var(--cream);
+        font-family: 'Nunito', sans-serif;
+    }
+    
     .lesson-container {
         max-width: 1000px;
         margin: 0 auto;
     }
     
     .lesson-header {
-        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        background: linear-gradient(135deg, var(--mint) 0%, var(--mint-light) 100%);
         color: white;
-        padding: 2rem;
-        border-radius: 15px;
+        padding: 2.5rem;
+        border-radius: 40px;
         margin-bottom: 2rem;
-        box-shadow: 0 5px 20px rgba(107, 203, 119, 0.3);
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .lesson-header::before {
+        content: '';
+        position: absolute;
+        top: -40%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-30px); }
     }
     
     .lesson-header h1 {
-        margin-bottom: 0.5rem;
-        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-weight: 800;
+        font-size: 2.25rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .lesson-header p {
+        margin: 0;
+        font-size: 1.05rem;
+        position: relative;
+        z-index: 1;
     }
     
     .lesson-content-card {
-        background: white;
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background: var(--cream);
+        border-radius: 32px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
         margin-bottom: 2rem;
     }
     
     .video-container {
         position: relative;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        padding-bottom: 56.25%;
         height: 0;
         overflow: hidden;
-        border-radius: 10px;
+        border-radius: 24px;
         margin-bottom: 2rem;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
     }
     
-    .video-container iframe {
+    .video-container iframe,
+    .video-container video {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         border: none;
+        border-radius: 24px;
     }
     
     .transcript-box {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 4px solid #6BCB77;
+        background: var(--lavender-lighter);
+        padding: 2rem;
+        border-radius: 24px;
+        border-left: 6px solid var(--lavender);
         margin-top: 2rem;
+        box-shadow: inset -2px -2px 5px rgba(255,255,255,0.7), inset 2px 2px 5px rgba(174,174,192,0.2);
+    }
+    
+    .transcript-box h4 {
+        color: var(--lavender);
+        font-weight: 700;
+        margin-bottom: 1rem;
     }
     
     .back-btn {
-        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        background: linear-gradient(135deg, var(--mint) 0%, var(--mint-light) 100%);
         border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
+        padding: 1rem 2rem;
+        border-radius: 30px;
         color: white;
-        font-weight: 600;
+        font-weight: 700;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        margin-right: 1rem;
     }
     
     .back-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(107, 203, 119, 0.4);
+        transform: translateY(-3px);
+        box-shadow: -8px -8px 18px rgba(255,255,255,0.95), 8px 8px 18px rgba(174,174,192,0.5);
+        color: white;
     }
     
     .lesson-meta {
         display: flex;
         gap: 2rem;
         flex-wrap: wrap;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--lavender-lighter);
     }
     
     .meta-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        color: var(--text-muted);
+    }
+    
+    .meta-item i {
+        color: var(--lavender);
     }
     
     .badge-content-type {
-        background: linear-gradient(135deg, #6BCB77 0%, #4D96A9 100%);
+        background: linear-gradient(135deg, var(--mint) 0%, var(--mint-light) 100%);
         color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+    }
+    
+    .lesson-content-card h4 {
+        color: var(--lavender);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .lesson-content-card p {
+        line-height: 1.8;
+        font-size: 1.05rem;
+        color: var(--text-dark);
+    }
+    
+    .alert {
+        background: var(--pale-yellow);
+        border: none;
+        border-radius: 24px;
+        padding: 1.5rem;
+        color: var(--text-dark);
+        box-shadow: inset -2px -2px 5px rgba(255,255,255,0.7), inset 2px 2px 5px rgba(174,174,192,0.2);
+    }
+    
+    .alert-info {
+        background: var(--mint-light);
+    }
+    
+    .btn-outline-primary {
+        background: var(--cream);
+        border: 2px solid var(--lavender);
+        color: var(--lavender);
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: var(--lavender-lighter);
+        color: var(--lavender);
+        transform: translateY(-3px);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, var(--mint), var(--mint-light));
+        border: none;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: var(--shadow-light), var(--shadow-dark);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-3px);
+        color: white;
     }
 </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<div class="lesson-container">
+    <!-- Lesson Header -->
+    <div class="lesson-header">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div style="flex: 1; min-width: 250px;">
+                <h1><i class="bi bi-book-fill"></i> {{ lesson.title }}</h1>
+                <p><strong>Course:</strong> {{ lesson.course.course_code }} - {{ lesson.course.title }}</p>
+            </div>
+            <span class="badge-content-type">
+                {% if lesson.content_type == 'video' %}
+                <i class="bi bi-play-circle-fill"></i> Video
+                {% elif lesson.content_type == 'audio' %}
+                <i class="bi bi-music-note-beamed"></i> Audio
+                {% else %}
+                <i class="bi bi-file-text-fill"></i> Text
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Lesson Content -->
+    <div class="lesson-content-card">
+        <div class="lesson-meta">
+            <div class="meta-item">
+                <i class="bi bi-person-fill"></i>
+                <span><strong>Teacher:</strong> {{ lesson.course.teacher.get_full_name|default:lesson.course.teacher.username }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="bi bi-calendar-event"></i>
+                <span><strong>Created:</strong> {{ lesson.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+        
+        <!-- Description -->
+        <div class="mb-4">
+            <h4><i class="bi bi-info-circle"></i> Description</h4>
+            <p>{{ lesson.description }}</p>
+        </div>
+        
+        <!-- Video Content -->
+        {% if lesson.content_type == 'video' and lesson.video_url %}
+        <div class="mb-4">
+            <h4><i class="bi bi-play-btn"></i> Video Lesson</h4>
+            
+            <div class="video-container">
+                {% if 'youtube.com' in lesson.video_url or 'youtu.be' in lesson.video_url %}
+                    {% if 'watch?v=' in lesson.video_url %}
+                        <iframe src="https://www.youtube.com/embed/{{ lesson.video_url|slice:'32:' }}?controls=1&modestbranding=1&rel=0&fs=1&playsinline=0" 
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                loading="lazy"></iframe>
+                    {% elif 'youtu.be/' in lesson.video_url %}
+                        <iframe src="https://www.youtube.com/embed/{{ lesson.video_url|slice:'-11:' }}?controls=1&modestbranding=1&rel=0&fs=1&playsinline=0" 
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                loading="lazy"></iframe>
+                    {% else %}
+                        <p>Unable to embed video. <a href="{{ lesson.video_url }}" target="_blank">Watch on YouTube</a></p>
+                    {% endif %}
+                {% else %}
+                    <video controls controlsList="nodownload">
+                        <source src="{{ lesson.video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+            </div>
+            
+            <!-- Sign Language Video -->
+            {% if lesson.has_sign_language and lesson.sign_language_video_url %}
+            <div class="mt-4">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-hand-index-thumb text-primary" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                    <h5 class="mb-0" style="color: var(--lavender); font-weight: 700;">Sign Language Interpretation</h5>
+                </div>
+                <div class="video-container" style="border: 4px solid var(--mint);">
+                    {% if 'youtube.com' in lesson.sign_language_video_url or 'youtu.be' in lesson.sign_language_video_url %}
+                        {% if 'watch?v=' in lesson.sign_language_video_url %}
+                            <iframe src="https://www.youtube.com/embed/{{ lesson.sign_language_video_url|slice:'32:' }}?controls=1&modestbranding=1&rel=0&fs=1" 
+                                    allowfullscreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        {% elif 'youtu.be/' in lesson.sign_language_video_url %}
+                            <iframe src="https://www.youtube.com/embed/{{ lesson.sign_language_video_url|slice:'-11:' }}?controls=1&modestbranding=1&rel=0&fs=1" 
+                                    allowfullscreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        {% endif %}
+                    {% else %}
+                        <video controls>
+                            <source src="{{ lesson.sign_language_video_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endif %}
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i> This video includes sign language interpretation for hearing-impaired students.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Audio Content -->
+        {% if lesson.content_type == 'audio' and lesson.file %}
+        <div class="mb-4">
+            <h4><i class="bi bi-music-note-beamed"></i> Audio Lesson</h4>
+            <audio controls style="width: 100%; border-radius: 24px;">
+                <source src="{{ lesson.file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endif %}
+        
+        <!-- Text Content -->
+        {% if lesson.text_content %}
+        <div class="mb-4">
+            <h4><i class="bi bi-file-text"></i> Lesson Content</h4>
+            <div>
+                {{ lesson.text_content|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- File Download -->
+        {% if lesson.file %}
+        <div class="mb-4">
+            <h4><i class="bi bi-download"></i> Download Materials</h4>
+            <a href="{{ lesson.file.url }}" class="btn-success" download>
+                <i class="bi bi-file-earmark-arrow-down"></i> Download File
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Transcript -->
+        {% if lesson.transcript %}
+        <div class="transcript-box">
+            <h4><i class="bi bi-card-text"></i> Transcript</h4>
+            <p style="white-space: pre-line;">{{ lesson.transcript }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Accessibility Note -->
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-universal-access"></i> 
+            <strong>Accessibility Tip:</strong> Use the text-to-speech button in the bottom-right corner to have this content read aloud!
+        </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="d-flex gap-2 mb-4 flex-wrap">
+        <a href="{% url 'course_detail' lesson.course.id %}" class="back-btn">
+            <i class="bi bi-arrow-left"></i> Back to Course
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn-outline-primary">
+            <i class="bi bi-house-fill"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+{% endblock %}
 
 <div class="lesson-container">
     <!-- Lesson Header -->
