@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import (
 	Profile, Course, Lesson, Assignment, Submission,
-	ComplianceReport, Feedback, Announcement, Attendance, ConductReport, CourseMaterial
+	ComplianceReport, Feedback, Announcement, Attendance, ConductReport
 )
 
 
@@ -35,15 +35,6 @@ class LessonAdmin(admin.ModelAdmin):
 	list_filter = ('content_type', 'course')
 	search_fields = ('title', 'course__title')
 	ordering = ('course', 'order')
-
-
-@admin.register(CourseMaterial)
-class CourseMaterialAdmin(admin.ModelAdmin):
-	list_display = ('title', 'course', 'material_type', 'uploaded_by', 'is_downloadable', 'created_at')
-	list_filter = ('material_type', 'course', 'is_downloadable')
-	search_fields = ('title', 'course__title', 'uploaded_by__username')
-	ordering = ('course', 'order', '-created_at')
-	readonly_fields = ('created_at', 'updated_at')
 
 
 @admin.register(Assignment)

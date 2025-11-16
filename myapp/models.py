@@ -121,55 +121,6 @@ class Lesson(models.Model):
         ordering = ['course', 'order', 'created_at']
 
 
-# Course Material Model - Videos, PDFs, Notes
-class CourseMaterial(models.Model):
-    MATERIAL_TYPE_CHOICES = [
-        ('video', 'Video'),
-        ('pdf', 'PDF Document'),
-        ('notes', 'Notes/Document'),
-        ('presentation', 'Presentation'),
-        ('other', 'Other'),
-    ]
-    
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='materials')
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
-    material_type = models.CharField(max_length=20, choices=MATERIAL_TYPE_CHOICES)
-    
-    # File upload
-    file = models.FileField(upload_to='course_materials/%Y/%m/', 
-                           validators=[FileExtensionValidator(['pdf', 'doc', 'docx', 'txt', 'ppt', 'pptx',
-                                                               'mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm'])])
-    
-    # Video-specific fields
-    video_url = models.URLField(blank=True, null=True, help_text="YouTube or external video URL")
-    duration = models.CharField(max_length=20, blank=True, null=True, help_text="e.g., 15:30")
-    
-    # Sign Language Support
-    sign_language_video_url = models.URLField(blank=True, null=True, 
-                                              help_text="Sign language interpretation video URL")
-    has_sign_language = models.BooleanField(default=False, 
-                                            help_text="Check if sign language interpretation is available")
-    
-    # Accessibility
-    transcript = models.TextField(blank=True, null=True, help_text="Transcript for videos")
-    alt_description = models.TextField(blank=True, null=True, help_text="Alternative description")
-    
-    # Metadata
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_materials')
-    file_size = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., 2.5 MB")
-    is_downloadable = models.BooleanField(default=True)
-    order = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.course.course_code} - {self.title} ({self.material_type})"
-    
-    class Meta:
-        ordering = ['course', 'order', '-created_at']
-
-
 # Assignment Model
 class Assignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
