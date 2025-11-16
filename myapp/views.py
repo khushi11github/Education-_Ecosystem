@@ -12,7 +12,7 @@ from .models import (
     ComplianceReport, Feedback, Announcement, Attendance, ConductReport
 )
 from .forms import (
-    UserRegisterForm, ProfileForm, AdminUserCreateForm, CourseForm,
+    UserRegisterForm, ProfileForm, CourseForm,
     LessonForm, AssignmentForm, SubmissionForm, GradingForm,
     ComplianceReportForm, FeedbackForm, FeedbackResponseForm,
     AnnouncementForm, AttendanceForm, ConductReportForm, CourseEnrollmentForm
@@ -233,81 +233,7 @@ def dashboard_parent(request):
     return render(request, 'dashboard_parent.html', context)
 
 
-# ============================================
-# USER MANAGEMENT (Admin Only)
-# ============================================
-
 @login_required
-def user_list(request):
-    """List all users (Admin only)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    users = User.objects.select_related('profile').all()
-    return render(request, 'user_list.html', {'users': users})
-
-
-@login_required
-def user_create(request):
-    """Create new user (Admin only)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    if request.method == 'POST':
-        form = AdminUserCreateForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            messages.success(request, f'User {user.username} created successfully!')
-            return redirect('user_list')
-    else:
-        form = AdminUserCreateForm()
-    
-    return render(request, 'user_form.html', {'form': form, 'title': 'Create User'})
-
-
-@login_required
-def user_edit(request, user_id):
-    """Edit user (Admin only)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    user = get_object_or_404(User, id=user_id)
-    
-    if request.method == 'POST':
-        profile_form = ProfileForm(request.POST, request.FILES, instance=user.profile)
-        if profile_form.is_valid():
-            profile_form.save()
-            messages.success(request, f'User {user.username} updated successfully!')
-            return redirect('user_list')
-    else:
-        profile_form = ProfileForm(instance=user.profile)
-    
-    return render(request, 'user_edit.html', {
-        'user': user,
-        'profile_form': profile_form,
-    })
-
-
-@login_required
-def user_delete(request, user_id):
-    """Delete user (Admin only)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    user = get_object_or_404(User, id=user_id)
-    if request.method == 'POST':
-        username = user.username
-        user.delete()
-        messages.success(request, f'User {username} deleted successfully!')
-        return redirect('user_list')
-    
-    return render(request, 'user_confirm_delete.html', {'user': user})
-
-
 # ============================================
 # COURSE MANAGEMENT
 # ============================================

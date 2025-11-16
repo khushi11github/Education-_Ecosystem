@@ -47,40 +47,8 @@ class ProfileForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make role read-only (can't change after registration)
+
         self.fields['role'].disabled = True
-
-
-# User Creation Form by Admin (visible password)
-class AdminUserCreateForm(forms.ModelForm):
-    password = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Enter password',
-            'class': 'form-control'
-        }),
-        required=True,
-        help_text='Password will be visible. Make sure to note it down.'
-    )
-    role = forms.ChoiceField(
-        choices=Profile.ROLE_CHOICES, 
-        required=True,
-        help_text='Select the user role'
-    )
-    
-    class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'is_staff', 'is_active']
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-        if commit:
-            user.save()
-           
-            profile, created = Profile.objects.get_or_create(user=user)
-            profile.role = self.cleaned_data['role']
-            profile.save()
-        return user
 
 
 # Course Form
