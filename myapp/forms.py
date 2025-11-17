@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import (Profile, Course, Lesson, Assignment, Submission, 
-                     ComplianceReport, Feedback, Announcement, Attendance, ConductReport)
+                     Feedback, Announcement, Attendance)
 
 
 # User Registration Form
@@ -109,18 +109,6 @@ class GradingForm(forms.ModelForm):
         }
 
 
-# Compliance Report Form
-class ComplianceReportForm(forms.ModelForm):
-    class Meta:
-        model = ComplianceReport
-        fields = ['institute_name', 'department', 'accessibility_status', 
-                  'compliance_percentage', 'comments', 'improvement_suggestions']
-        widgets = {
-            'comments': forms.Textarea(attrs={'rows': 4}),
-            'improvement_suggestions': forms.Textarea(attrs={'rows': 4}),
-        }
-
-
 # Feedback Form
 class FeedbackForm(forms.ModelForm):
     class Meta:
@@ -159,20 +147,6 @@ class AttendanceForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'remarks': forms.Textarea(attrs={'rows': 2}),
-        }
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['student'].queryset = User.objects.filter(profile__role='student')
-
-
-# Conduct Report Form
-class ConductReportForm(forms.ModelForm):
-    class Meta:
-        model = ConductReport
-        fields = ['student', 'course', 'behavior_rating', 'participation_rating', 'comments']
-        widgets = {
-            'comments': forms.Textarea(attrs={'rows': 4}),
         }
     
     def __init__(self, *args, **kwargs):

@@ -9,13 +9,13 @@ from datetime import datetime
 
 from .models import (
     Profile, Course, Lesson, Assignment, Submission,
-    ComplianceReport, Feedback, Announcement, Attendance, ConductReport
+    Feedback, Announcement, Attendance
 )
 from .forms import (
     UserRegisterForm, ProfileForm, CourseForm,
     LessonForm, AssignmentForm, SubmissionForm, GradingForm,
-    ComplianceReportForm, FeedbackForm, FeedbackResponseForm,
-    AnnouncementForm, AttendanceForm, ConductReportForm, CourseEnrollmentForm
+    FeedbackForm, FeedbackResponseForm,
+    AnnouncementForm, AttendanceForm, CourseEnrollmentForm
 )
 
 
@@ -193,14 +193,12 @@ def dashboard_student(request):
     ).exclude(
         submissions__student=request.user
     )
-    conduct_reports = ConductReport.objects.filter(student=request.user)
     announcements = Announcement.objects.filter(is_active=True)[:5]
     
     context = {
         'enrolled_courses': enrolled_courses,
         'my_submissions': my_submissions,
         'pending_assignments': pending_assignments,
-        'conduct_reports': conduct_reports,
         'announcements': announcements,
         'profile': request.user.profile,
     }
@@ -217,18 +215,16 @@ def dashboard_parent(request):
     linked_student = request.user.profile.linked_student
     student_courses = None
     student_submissions = None
-    conduct_reports = None
     
     if linked_student:
         student_courses = linked_student.courses_enrolled.all()
         student_submissions = Submission.objects.filter(student=linked_student)
-        conduct_reports = ConductReport.objects.filter(student=linked_student)
+
     
     context = {
         'linked_student': linked_student,
         'student_courses': student_courses,
         'student_submissions': student_submissions,
-        'conduct_reports': conduct_reports,
     }
     return render(request, 'dashboard_parent.html', context)
 
@@ -561,40 +557,6 @@ def submission_grade(request, submission_id):
 
 # ============================================
 # COMPLIANCE REPORTS (Admin)
-# ============================================
-
-@login_required
-def compliance_list(request):
-    """List compliance reports (Admin)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    reports = ComplianceReport.objects.all()
-    return render(request, 'compliance_list.html', {'reports': reports})
-
-
-@login_required
-def compliance_create(request):
-    """Create compliance report (Admin)"""
-    if request.user.profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
-    
-    if request.method == 'POST':
-        form = ComplianceReportForm(request.POST)
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.reported_by = request.user
-            report.save()
-            messages.success(request, 'Compliance report created successfully!')
-            return redirect('compliance_list')
-    else:
-        form = ComplianceReportForm()
-    
-    return render(request, 'compliance_form.html', {'form': form})
-
-
 # ============================================
 # FEEDBACK SYSTEM
 # ============================================

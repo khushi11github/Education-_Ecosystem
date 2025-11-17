@@ -167,30 +167,6 @@ class Submission(models.Model):
 
 
 # Compliance Report Model
-class ComplianceReport(models.Model):
-    STATUS_CHOICES = [
-        ('compliant', 'Compliant'),
-        ('partial', 'Partially Compliant'),
-        ('non_compliant', 'Non-Compliant'),
-    ]
-    
-    institute_name = models.CharField(max_length=200)
-    department = models.CharField(max_length=100, blank=True, null=True)
-    accessibility_status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    compliance_percentage = models.IntegerField(default=0, help_text="Percentage of accessibility achieved (0-100)")
-    comments = models.TextField()
-    improvement_suggestions = models.TextField(blank=True, null=True)
-    reported_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='compliance_reports')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.institute_name} - {self.accessibility_status}"
-    
-    class Meta:
-        ordering = ['-created_at']
-
-
 # Feedback Model
 class Feedback(models.Model):
     STATUS_CHOICES = [
@@ -270,20 +246,4 @@ class Attendance(models.Model):
 
 
 # Conduct Report Model
-class ConductReport(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conduct_reports',
-                                limit_choices_to={'profile__role': 'student'})
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='conduct_reports')
-    behavior_rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], 
-                                         help_text="1=Poor, 5=Excellent")
-    participation_rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)],
-                                               help_text="1=Poor, 5=Excellent")
-    comments = models.TextField()
-    reported_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conduct_reports_made')
-    date = models.DateField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.student.username} - {self.course.course_code}"
-    
-    class Meta:
-        ordering = ['-date']
+

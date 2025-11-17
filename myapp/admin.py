@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import (
 	Profile, Course, Lesson, Assignment, Submission,
-	ComplianceReport, Feedback, Announcement, Attendance, ConductReport
+	Feedback, Announcement, Attendance
 )
 
 
@@ -59,19 +59,6 @@ class SubmissionAdmin(admin.ModelAdmin):
 	mark_graded.short_description = 'Mark selected submissions as graded'
 
 
-@admin.register(ComplianceReport)
-class ComplianceReportAdmin(admin.ModelAdmin):
-	list_display = ('institute_name', 'accessibility_status', 'compliance_percentage', 'reported_by', 'created_at')
-	list_filter = ('accessibility_status',)
-	search_fields = ('institute_name', 'reported_by__username')
-	actions = ['mark_compliant']
-
-	def mark_compliant(self, request, queryset):
-		updated = queryset.update(accessibility_status='compliant')
-		self.message_user(request, f"Marked {updated} report(s) as compliant.")
-	mark_compliant.short_description = 'Mark selected reports as compliant'
-
-
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
 	list_display = ('subject', 'submitted_by', 'category', 'status', 'created_at')
@@ -96,13 +83,6 @@ class AnnouncementAdmin(admin.ModelAdmin):
 class AttendanceAdmin(admin.ModelAdmin):
 	list_display = ('student', 'course', 'date', 'status', 'marked_by')
 	list_filter = ('status', 'course')
-	search_fields = ('student__username', 'course__course_code')
-
-
-@admin.register(ConductReport)
-class ConductReportAdmin(admin.ModelAdmin):
-	list_display = ('student', 'course', 'behavior_rating', 'participation_rating', 'date')
-	list_filter = ('course', 'behavior_rating')
 	search_fields = ('student__username', 'course__course_code')
 
 
